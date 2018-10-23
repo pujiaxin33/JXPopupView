@@ -20,7 +20,6 @@ public enum JXPopupViewBackgroundStyle {
 }
 
 public class JXPopupView: UIView {
-    public let backgroundView: JXBackgroundView
     /*
      举个例子
      /////////////////////
@@ -39,15 +38,18 @@ public class JXPopupView: UIView {
      /////////////////////
      /////////////////////
 
-     - dismissible  为YES时，点击区域B可以消失
-     - penetrable   为YES时，将会忽略区域B的交互操作（如果penetrable为true，dismissible为true，此时dismissible将失效，无法点击区域B消失）
+     - isDismissible  为YES时，点击区域B可以消失
+     - isInteractive  为YES时，点击区域A可以触发contentView上的交互操作
+     - isPenetrable   为YES时，将会忽略区域A、B的交互操作，判定优先级低于isInteractive
      */
-    public var dismissable = false {
+    public var isDismissible = false {
         didSet {
-            backgroundView.isUserInteractionEnabled = dismissable
+            backgroundView.isUserInteractionEnabled = isDismissible
         }
     }
-    public var penetrable = false
+    public var isInteractive = true
+    public var isPenetrable = false
+    public let backgroundView: JXBackgroundView
     public var willDispalyCallback: (()->())?
     public var didDispalyCallback: (()->())?
     public var willDismissCallback: (()->())?
@@ -56,6 +58,7 @@ public class JXPopupView: UIView {
     let containerView: UIView
     let contentView: UIView
     let animator: JXPopupViewAnimationProtocol
+    var isAnimating = false
 
     deinit {
         willDispalyCallback = nil
@@ -69,10 +72,10 @@ public class JXPopupView: UIView {
         self.contentView = contentView
         self.animator = animator
         backgroundView = JXBackgroundView(frame: CGRect.zero)
-
+        
         super.init(frame: containerView.bounds)
 
-        backgroundView.isUserInteractionEnabled = false
+        backgroundView.isUserInteractionEnabled = isDismissible
         backgroundView.addTarget(self, action: #selector(backgroundViewClicked), for: UIControl.Event.touchUpInside)
         addSubview(backgroundView)
         addSubview(contentView)
@@ -87,10 +90,21 @@ public class JXPopupView: UIView {
     public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let pointInContent = convert(point, to: contentView)
         let isPointInContent = contentView.bounds.contains(pointInContent)
-        if penetrable && !isPointInContent {
-            return nil
+        if isPointInContent {
+            if isInteractive {
+                return super.hitTest(point, with: event)
+            }else if !isPenetrable {
+                return super.hitTest(point, with: event)
+            }else {
+                return nil
+            }
+        }else {
+            if !isPenetrable {
+                return super.hitTest(point, with: event)
+            }else {
+                return nil
+            }
         }
-        return super.hitTest(point, with: event)
     }
 
     override public func layoutSubviews() {
@@ -100,20 +114,30 @@ public class JXPopupView: UIView {
     }
 
     public func display(animated: Bool, completion: (()->())?) {
+        if isAnimating {
+            return
+        }
+        isAnimating = true
         containerView.addSubview(self)
 
         willDispalyCallback?()
         animator.display(contentView: contentView, backgroundView: backgroundView, animated: animated, completion: {
             completion?()
+            self.isAnimating = false
             self.didDispalyCallback?()
         })
     }
 
     public func dismiss(animated: Bool, completion: (()->())?) {
+        if isAnimating {
+            return
+        }
+        isAnimating = true
         willDismissCallback?()
         animator.dismiss(contentView: contentView, backgroundView: backgroundView, animated: animated, completion: {
             self.removeFromSuperview()
             completion?()
+            self.isAnimating = false
             self.didDismissCallback?()
         })
     }
@@ -188,44 +212,72 @@ public class JXBackgroundView: UIControl {
 }
 
 public class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
-    public var displayDamping: CGFloat = 1
-    public var displayInitialSpringVelocaity: CGFloat = 0
     public var displayDuration: TimeInterval = 0.25
-    public var displayAnimationOptions = UIView.AnimationOptions.init(rawValue: 7 << 16)
-    public var dismissDamping: CGFloat = 1
-    public var dismissInitialSpringVelocaity: CGFloat = 0
+    public var displayAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
     public var dismissDuration: TimeInterval = 0.25
-    public var dismissAnimationOptions = UIView.AnimationOptions.curveEaseIn
+    public var dismissAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
+    public var customDisplayAnimateCallback: ((@escaping ()->(), @escaping (Bool)->())->())?
+    public var customDismissAnimateCallback: ((@escaping ()->(), @escaping (Bool)->())->())?
     var targetRect = CGRect.zero
     var sourceRect = CGRect.zero
+    var internalDisplayAnimateBlock: (()->())?
+    var internalDismissAnimateBlock: (()->())?
 
     public func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+        internalDisplayAnimateBlock = {[weak self] in
+            guard self != nil else {
+                return
+            }
+            contentView.frame = self!.targetRect
+            backgroundView.alpha = 1
+        }
+        internalDismissAnimateBlock = {[weak self] in
+            guard self != nil else {
+                return
+            }
+            contentView.frame = self!.sourceRect
+            backgroundView.alpha = 0
+        }
     }
 
     public func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
-            UIView.animate(withDuration: displayDuration, delay: 0, usingSpringWithDamping: displayDamping, initialSpringVelocity: displayInitialSpringVelocaity, options: displayAnimationOptions, animations: {
-                contentView.frame = self.targetRect
-                backgroundView.alpha = 1
-            }) { (finished) in
-                completion()
+            if customDisplayAnimateCallback != nil {
+                customDisplayAnimateCallback!({[weak self] in
+                    self?.internalDisplayAnimateBlock?()
+                }, { (finished) in
+                    completion()
+                })
+            }else {
+                UIView.animate(withDuration: displayDuration, delay: 0, options: displayAnimationOptions, animations: {
+                    self.internalDisplayAnimateBlock?()
+                }) { (finished) in
+                    completion()
+                }
             }
         }else {
-            contentView.frame = targetRect
+            self.internalDisplayAnimateBlock?()
             completion()
         }
     }
 
     public func dismiss(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
-            UIView.animate(withDuration: dismissDuration, delay: 0, usingSpringWithDamping: dismissDamping, initialSpringVelocity: dismissInitialSpringVelocaity, options: dismissAnimationOptions, animations: {
-                contentView.frame = self.sourceRect
-                backgroundView.alpha = 0
-            }) { (finished) in
-                completion()
+            if customDismissAnimateCallback != nil {
+                customDismissAnimateCallback!({[weak self] in
+                    self?.internalDismissAnimateBlock?()
+                }, { (finished) in
+                    completion()
+                })
+            }else {
+                UIView.animate(withDuration: dismissDuration, delay: 0, options: dismissAnimationOptions, animations: {
+                    self.internalDismissAnimateBlock?()
+                }) { (finished) in
+                    completion()
+                }
             }
         }else {
-            contentView.frame = sourceRect
+            self.internalDismissAnimateBlock?()
             completion()
         }
     }
@@ -238,8 +290,9 @@ public class JXPopupViewLeftwardAnimator: JXPopupViewBaseAnimator {
         sourceRect = frame
         targetRect = contentView.frame
         contentView.frame = sourceRect
-
         backgroundView.alpha = 0
+
+        super.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
     }
 }
 
@@ -250,8 +303,9 @@ public class JXPopupViewRightwardAnimator: JXPopupViewBaseAnimator {
         sourceRect = frame
         targetRect = contentView.frame
         contentView.frame = sourceRect
-
         backgroundView.alpha = 0
+
+        super.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
     }
 }
 
@@ -262,8 +316,9 @@ public class JXPopupViewUpwardAnimator: JXPopupViewBaseAnimator {
         sourceRect = frame
         targetRect = contentView.frame
         contentView.frame = sourceRect
-
         backgroundView.alpha = 0
+
+        super.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
     }
 }
 
@@ -274,8 +329,9 @@ public class JXPopupViewDownwardAnimator: JXPopupViewBaseAnimator {
         sourceRect = frame
         targetRect = contentView.frame
         contentView.frame = sourceRect
-
         backgroundView.alpha = 0
+
+        super.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
     }
 }
 
@@ -283,75 +339,33 @@ public class JXPopupViewFadeInOutAnimator: JXPopupViewBaseAnimator {
     public override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
         contentView.alpha = 0
         backgroundView.alpha = 0
-    }
 
-    public override func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
-        if animated {
-            UIView.animate(withDuration: displayDuration, delay: 0, usingSpringWithDamping: displayDamping, initialSpringVelocity: displayInitialSpringVelocaity, options: displayAnimationOptions, animations: {
-                contentView.alpha = 1
-                backgroundView.alpha = 1
-            }) { (finished) in
-                completion()
-            }
-        }else {
+        internalDisplayAnimateBlock = {
             contentView.alpha = 1
-            completion()
+            backgroundView.alpha = 1
         }
-    }
-
-    public override func dismiss(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
-        if animated {
-            UIView.animate(withDuration: dismissDuration, delay: 0, usingSpringWithDamping: dismissDamping, initialSpringVelocity: dismissInitialSpringVelocaity, options: dismissAnimationOptions, animations: {
-                contentView.alpha = 0
-                backgroundView.alpha = 0
-            }) { (finished) in
-                completion()
-            }
-        }else {
+        internalDismissAnimateBlock = {
             contentView.alpha = 0
-            completion()
+            backgroundView.alpha = 0
         }
     }
 }
 
 public class JXPopupViewZoomInOutAnimator: JXPopupViewBaseAnimator {
-    let smallTransform = CGAffineTransform(scaleX: 0.3, y: 0.3)
-
     public override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
         contentView.alpha = 0
         backgroundView.alpha = 0
-        contentView.transform = smallTransform
-    }
+        contentView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
 
-    public override func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
-        if animated {
-            UIView.animate(withDuration: displayDuration, delay: 0, usingSpringWithDamping: displayDamping, initialSpringVelocity: displayInitialSpringVelocaity, options: displayAnimationOptions, animations: {
-                contentView.alpha = 1
-                contentView.transform = .identity
-                backgroundView.alpha = 1
-            }) { (finished) in
-                completion()
-            }
-        }else {
+        internalDisplayAnimateBlock = {
             contentView.alpha = 1
             contentView.transform = .identity
-            completion()
+            backgroundView.alpha = 1
         }
-    }
-
-    public override func dismiss(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
-        if animated {
-            UIView.animate(withDuration: dismissDuration, delay: 0, usingSpringWithDamping: dismissDamping, initialSpringVelocity: dismissInitialSpringVelocaity, options: dismissAnimationOptions, animations: {
-                contentView.alpha = 0
-                contentView.transform = self.smallTransform
-                backgroundView.alpha = 0
-            }) { (finished) in
-                completion()
-            }
-        }else {
+        internalDismissAnimateBlock = {
             contentView.alpha = 0
-            contentView.transform = smallTransform
-            completion()
+            contentView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
+            backgroundView.alpha = 0
         }
     }
 }

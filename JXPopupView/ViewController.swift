@@ -29,7 +29,7 @@ class ViewController: UIViewController {
         //        animator.displayInitialSpringVelocaity = 0.1
         let popupView = JXPopupView(containerView: self.view, contentView: contentView, animator: animator)
         popupView.penetrable = true
-//        popupView.dismissable = true
+//        popupView.dismissible = true
         popupView.backgroundView.style = .blur
         popupView.backgroundView.blurEffectStyle = .light
         popupView.backgroundView.color = UIColor.clear
