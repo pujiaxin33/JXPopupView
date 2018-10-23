@@ -14,6 +14,9 @@
 		19E0CB8D217D75D5007290BA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CB8B217D75D5007290BA /* LaunchScreen.storyboard */; };
 		19E0CB96217D7603007290BA /* JXPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB95217D7603007290BA /* JXPopupView.swift */; };
 		19E0CB98217DA4BD007290BA /* TestAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB97217DA4BD007290BA /* TestAlertView.swift */; };
+		19E0CB9D217F0023007290BA /* TestAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CB9C217F0023007290BA /* TestAlertView.xib */; };
+		19E0CB9F217F0335007290BA /* AnimationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB9E217F0335007290BA /* AnimationViewController.swift */; };
+		19E0CBA1217F0342007290BA /* BackgroundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CBA0217F0342007290BA /* BackgroundViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +29,9 @@
 		19E0CB8E217D75D5007290BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		19E0CB95217D7603007290BA /* JXPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JXPopupView.swift; sourceTree = "<group>"; };
 		19E0CB97217DA4BD007290BA /* TestAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAlertView.swift; sourceTree = "<group>"; };
+		19E0CB9C217F0023007290BA /* TestAlertView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TestAlertView.xib; sourceTree = "<group>"; };
+		19E0CB9E217F0335007290BA /* AnimationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationViewController.swift; sourceTree = "<group>"; };
+		19E0CBA0217F0342007290BA /* BackgroundViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +67,10 @@
 				19E0CB94217D75EE007290BA /* Source */,
 				19E0CB82217D75D3007290BA /* AppDelegate.swift */,
 				19E0CB84217D75D3007290BA /* ViewController.swift */,
+				19E0CB9E217F0335007290BA /* AnimationViewController.swift */,
+				19E0CBA0217F0342007290BA /* BackgroundViewController.swift */,
 				19E0CB97217DA4BD007290BA /* TestAlertView.swift */,
+				19E0CB9C217F0023007290BA /* TestAlertView.xib */,
 				19E0CB86217D75D3007290BA /* Main.storyboard */,
 				19E0CB89217D75D5007290BA /* Assets.xcassets */,
 				19E0CB8B217D75D5007290BA /* LaunchScreen.storyboard */,
@@ -137,6 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				19E0CB8D217D75D5007290BA /* LaunchScreen.storyboard in Resources */,
+				19E0CB9D217F0023007290BA /* TestAlertView.xib in Resources */,
 				19E0CB8A217D75D5007290BA /* Assets.xcassets in Resources */,
 				19E0CB88217D75D3007290BA /* Main.storyboard in Resources */,
 			);
@@ -149,8 +159,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19E0CBA1217F0342007290BA /* BackgroundViewController.swift in Sources */,
 				19E0CB85217D75D3007290BA /* ViewController.swift in Sources */,
 				19E0CB98217DA4BD007290BA /* TestAlertView.swift in Sources */,
+				19E0CB9F217F0335007290BA /* AnimationViewController.swift in Sources */,
 				19E0CB83217D75D3007290BA /* AppDelegate.swift in Sources */,
 				19E0CB96217D7603007290BA /* JXPopupView.swift in Sources */,
 			);
@@ -300,6 +312,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = JXPopupView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -317,6 +330,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				INFOPLIST_FILE = JXPopupView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -10,15 +10,13 @@ import UIKit
 
 class TestAlertView: UIView {
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        backgroundColor = .red
+    @IBAction func buttonClicked(_ sender: UIButton) {
+        sender.setTitle("修改成功", for: UIControl.State.normal)
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        
     }
-
-
 }

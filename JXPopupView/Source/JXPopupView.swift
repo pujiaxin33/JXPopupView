@@ -38,9 +38,9 @@ public class JXPopupView: UIView {
      /////////////////////
      /////////////////////
 
-     - isDismissible  为YES时，点击区域B可以消失
+     - isDismissible  为YES时，点击区域B可以消失（前提是isPenetrable为false）
      - isInteractive  为YES时，点击区域A可以触发contentView上的交互操作
-     - isPenetrable   为YES时，将会忽略区域A、B的交互操作，判定优先级低于isInteractive
+     - isPenetrable   为YES时，将会忽略区域B的交互操作
      */
     public var isDismissible = false {
         didSet {
@@ -92,8 +92,6 @@ public class JXPopupView: UIView {
         let isPointInContent = contentView.bounds.contains(pointInContent)
         if isPointInContent {
             if isInteractive {
-                return super.hitTest(point, with: event)
-            }else if !isPenetrable {
                 return super.hitTest(point, with: event)
             }else {
                 return nil
@@ -216,8 +214,8 @@ public class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     public var displayAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
     public var dismissDuration: TimeInterval = 0.25
     public var dismissAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
-    public var customDisplayAnimateCallback: ((@escaping ()->(), @escaping (Bool)->())->())?
-    public var customDismissAnimateCallback: ((@escaping ()->(), @escaping (Bool)->())->())?
+    public var customDisplayAnimateCallback: ((UIView, JXBackgroundView, @escaping ()->(), @escaping (Bool)->())->())?
+    public var customDismissAnimateCallback: ((UIView, JXBackgroundView, @escaping ()->(), @escaping (Bool)->())->())?
     var targetRect = CGRect.zero
     var sourceRect = CGRect.zero
     var internalDisplayAnimateBlock: (()->())?
@@ -243,7 +241,7 @@ public class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     public func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
             if customDisplayAnimateCallback != nil {
-                customDisplayAnimateCallback!({[weak self] in
+                customDisplayAnimateCallback!(contentView, backgroundView, {[weak self] in
                     self?.internalDisplayAnimateBlock?()
                 }, { (finished) in
                     completion()
@@ -264,7 +262,7 @@ public class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     public func dismiss(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
             if customDismissAnimateCallback != nil {
-                customDismissAnimateCallback!({[weak self] in
+                customDismissAnimateCallback!(contentView, backgroundView, {[weak self] in
                     self?.internalDismissAnimateBlock?()
                 }, { (finished) in
                     completion()
