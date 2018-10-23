@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     var backgroundColor = UIColor.black.withAlphaComponent(0.3)
     var backgroundEffectStyle = UIBlurEffect.Style.light
     var animationIndex: Int = 0
+    var containerView: UIView!
+    @IBOutlet weak var customView: UIView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,11 +52,26 @@ class ViewController: UIViewController {
         self.navigationController?.pushViewController(vc, animated: true)
     }
 
-    @IBAction func displayButtonClicked(_ sender: UIButton) {
+    @IBAction func customViewDisplayButtonClicked(_ sender: UIButton) {
+        containerView = customView
+        displayPopupView()
+    }
+
+    @IBAction func vcviewDisplayButtonClicked(_ sender: UIButton) {
+        containerView = self.view
+        displayPopupView()
+    }
+
+    @IBAction func windowDisplayButtonClicked(_ sender: UIButton) {
+        containerView = UIApplication.shared.keyWindow!
+        displayPopupView()
+    }
+
+    func displayPopupView() {
         //- 确定contentView的目标frame
         contentView = Bundle.main.loadNibNamed("TestAlertView", owner: nil, options: nil)?.first as? TestAlertView
-        let x: CGFloat = (self.view.bounds.size.width - 200)/2
-        let y: CGFloat = (self.view.bounds.size.height - 200)/2
+        let x: CGFloat = (containerView.bounds.size.width - 200)/2
+        let y: CGFloat = (containerView.bounds.size.height - 200)/2
         contentView.frame = CGRect(x: x, y: y, width: 200, height: 200)
         //- 确定动画效果
         var animator: JXPopupViewAnimationProtocol?
@@ -72,38 +89,13 @@ class ViewController: UIViewController {
         case 5:
             animator = JXPopupViewRightwardAnimator()
         case 6:
-            animator = JXPopupViewDownwardAnimator()
-            let customAnimator = animator as! JXPopupViewDownwardAnimator
-            customAnimator.customDisplayAnimateCallback = {[weak customAnimator] (_, _, animationBlock, completionBlock) in
-                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.8, options: customAnimator!.displayAnimationOptions, animations: {
-                    animationBlock()
-                }, completion: { (finished) in
-                    completionBlock(finished)
-                })
-            }
+            animator = JXPopupViewSpringDownwardAnimator()
         case 7:
-            animator = JXPopupViewDownwardAnimator()
-            let customAnimator = animator as! JXPopupViewDownwardAnimator
-            customAnimator.customDisplayAnimateCallback = {(contentView, backgroundView, _, completionBlock) in
-                UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-                    contentView.frame = CGRect(x: 50, y: 200, width: 200, height: 200)
-                    backgroundView.alpha = 1
-                }, completion: { (finished) in
-                    completionBlock(finished)
-                })
-            }
-            customAnimator.customDismissAnimateCallback = {[weak self] (contentView, backgroundView, _, completionBlock) in
-                UIView.animate(withDuration: 0.3, delay: 0, options: UIView.AnimationOptions.curveEaseInOut, animations: {
-                    contentView.frame = CGRect(x: self!.view.bounds.size.width, y: self!.view.bounds.size.height, width: 200, height: 200)
-                    backgroundView.alpha = 0
-                }, completion: { (finished) in
-                    completionBlock(finished)
-                })
-            }
+            animator = JXPopupViewCustomAnimator()
         default:
             break
         }
-        let popupView = JXPopupView(containerView: self.view, contentView: contentView, animator: animator!)
+        let popupView = JXPopupView(containerView: containerView, contentView: contentView, animator: animator!)
         //配置交互
         popupView.isDismissible = true
         popupView.isInteractive = true
@@ -115,7 +107,7 @@ class ViewController: UIViewController {
         popupView.display(animated: true, completion: nil)
     }
 
-    @IBAction func dismissButtonClicked(_ sender: UIButton) {
+    @IBAction func dismissButtonClicked(_ sender: UIBarButtonItem) {
         contentView.jx_popupView?.dismiss(animated: true, completion: nil)
     }
 }

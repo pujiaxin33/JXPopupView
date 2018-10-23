@@ -36,24 +36,75 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZVo-EQ-prp">
-                                <rect key="frame" x="172" y="537" width="31" height="30"/>
+                                <rect key="frame" x="112.5" y="607" width="150" height="30"/>
+                                <color key="backgroundColor" red="0.074509803920000006" green="0.85098039219999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="3mm-4o-kap"/>
                                     <constraint firstAttribute="height" constant="30" id="pkj-v2-oKH"/>
                                 </constraints>
-                                <state key="normal" title="显示"/>
+                                <state key="normal" title="在Window显示">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
                                 <connections>
-                                    <action selector="displayButtonClicked:" destination="PoP-AR-ZAu" eventType="touchUpInside" id="NIQ-SM-ike"/>
+                                    <action selector="windowDisplayButtonClicked:" destination="PoP-AR-ZAu" eventType="touchUpInside" id="Yno-Y2-m2c"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="320-WC-2Ho">
+                                <rect key="frame" x="112.5" y="560" width="150" height="30"/>
+                                <color key="backgroundColor" red="0.074509803920000006" green="0.85098039219999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="SdW-Ag-9bO"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="uWb-8y-Jbg"/>
+                                </constraints>
+                                <state key="normal" title="在vc.view显示">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="vcviewDisplayButtonClicked:" destination="PoP-AR-ZAu" eventType="touchUpInside" id="Bho-9x-n2H"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DdN-1C-MI7">
+                                <rect key="frame" x="112.5" y="513" width="150" height="30"/>
+                                <color key="backgroundColor" red="0.074509803920000006" green="0.85098039219999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Amm-f4-FHX"/>
+                                    <constraint firstAttribute="height" constant="30" id="HVW-d1-fbq"/>
+                                </constraints>
+                                <state key="normal" title="在customview显示">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="customViewDisplayButtonClicked:" destination="PoP-AR-ZAu" eventType="touchUpInside" id="hUt-2w-Bno"/>
+                                </connections>
+                            </button>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-1V-FKB">
+                                <rect key="frame" x="0.0" y="124" width="375" height="280"/>
+                                <color key="backgroundColor" red="0.35294117650000001" green="0.84313725490000002" blue="0.79215686269999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="280" id="iPJ-ip-N5P"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="HQd-1V-FKB" firstAttribute="top" secondItem="RRp-gI-Lby" secondAttribute="top" constant="60" id="EfQ-yH-xgZ"/>
                             <constraint firstItem="ZVo-EQ-prp" firstAttribute="centerX" secondItem="ubx-FC-11i" secondAttribute="centerX" id="GgN-sf-CVP"/>
-                            <constraint firstItem="RRp-gI-Lby" firstAttribute="bottom" secondItem="ZVo-EQ-prp" secondAttribute="bottom" constant="100" id="Nfk-O4-4P2"/>
+                            <constraint firstItem="RRp-gI-Lby" firstAttribute="bottom" secondItem="ZVo-EQ-prp" secondAttribute="bottom" constant="30" id="Nfk-O4-4P2"/>
+                            <constraint firstItem="ZVo-EQ-prp" firstAttribute="top" secondItem="320-WC-2Ho" secondAttribute="bottom" constant="17" id="f5h-8T-yTp"/>
+                            <constraint firstItem="HQd-1V-FKB" firstAttribute="trailing" secondItem="RRp-gI-Lby" secondAttribute="trailing" id="pqG-OA-I9v"/>
+                            <constraint firstItem="320-WC-2Ho" firstAttribute="centerX" secondItem="ubx-FC-11i" secondAttribute="centerX" id="tPx-Ua-zZh"/>
+                            <constraint firstItem="HQd-1V-FKB" firstAttribute="leading" secondItem="RRp-gI-Lby" secondAttribute="leading" id="tnR-81-GlQ"/>
+                            <constraint firstItem="320-WC-2Ho" firstAttribute="top" secondItem="DdN-1C-MI7" secondAttribute="bottom" constant="17" id="vVT-9R-URJ"/>
+                            <constraint firstItem="DdN-1C-MI7" firstAttribute="centerX" secondItem="ubx-FC-11i" secondAttribute="centerX" id="w6V-kW-PGG"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="RRp-gI-Lby"/>
                     </view>
                     <navigationItem key="navigationItem" id="LHj-dz-Gwy">
+                        <barButtonItem key="leftBarButtonItem" title="Dismiss" id="Em3-pW-98p">
+                            <connections>
+                                <action selector="dismissButtonClicked:" destination="PoP-AR-ZAu" id="r4s-ZB-xnX"/>
+                            </connections>
+                        </barButtonItem>
                         <rightBarButtonItems>
                             <barButtonItem title="动画效果" id="vXR-26-a3s">
                                 <connections>
@@ -68,6 +119,7 @@
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
+                        <outlet property="customView" destination="HQd-1V-FKB" id="t8E-v1-lQx"/>
                         <segue destination="gec-Vo-p7S" kind="show" identifier="to_animation" id="fHq-8c-LJv"/>
                         <segue destination="USu-YH-MCZ" kind="show" identifier="to_background" id="obE-fF-tEc"/>
                     </connections>

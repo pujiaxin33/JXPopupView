@@ -17,6 +17,8 @@
 		19E0CB9D217F0023007290BA /* TestAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CB9C217F0023007290BA /* TestAlertView.xib */; };
 		19E0CB9F217F0335007290BA /* AnimationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB9E217F0335007290BA /* AnimationViewController.swift */; };
 		19E0CBA1217F0342007290BA /* BackgroundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CBA0217F0342007290BA /* BackgroundViewController.swift */; };
+		19E0CBA4217F29A7007290BA /* JXPopupViewSpringDownwardAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CBA3217F29A7007290BA /* JXPopupViewSpringDownwardAnimator.swift */; };
+		19E0CBA6217F2A73007290BA /* JXPopupViewCustomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CBA5217F2A73007290BA /* JXPopupViewCustomAnimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		19E0CB9C217F0023007290BA /* TestAlertView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TestAlertView.xib; sourceTree = "<group>"; };
 		19E0CB9E217F0335007290BA /* AnimationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationViewController.swift; sourceTree = "<group>"; };
 		19E0CBA0217F0342007290BA /* BackgroundViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundViewController.swift; sourceTree = "<group>"; };
+		19E0CBA3217F29A7007290BA /* JXPopupViewSpringDownwardAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JXPopupViewSpringDownwardAnimator.swift; sourceTree = "<group>"; };
+		19E0CBA5217F2A73007290BA /* JXPopupViewCustomAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JXPopupViewCustomAnimator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,12 +69,9 @@
 			isa = PBXGroup;
 			children = (
 				19E0CB94217D75EE007290BA /* Source */,
+				19E0CBA2217F2940007290BA /* Example */,
 				19E0CB82217D75D3007290BA /* AppDelegate.swift */,
 				19E0CB84217D75D3007290BA /* ViewController.swift */,
-				19E0CB9E217F0335007290BA /* AnimationViewController.swift */,
-				19E0CBA0217F0342007290BA /* BackgroundViewController.swift */,
-				19E0CB97217DA4BD007290BA /* TestAlertView.swift */,
-				19E0CB9C217F0023007290BA /* TestAlertView.xib */,
 				19E0CB86217D75D3007290BA /* Main.storyboard */,
 				19E0CB89217D75D5007290BA /* Assets.xcassets */,
 				19E0CB8B217D75D5007290BA /* LaunchScreen.storyboard */,
@@ -85,6 +86,19 @@
 				19E0CB95217D7603007290BA /* JXPopupView.swift */,
 			);
 			path = Source;
+			sourceTree = "<group>";
+		};
+		19E0CBA2217F2940007290BA /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				19E0CB9E217F0335007290BA /* AnimationViewController.swift */,
+				19E0CBA0217F0342007290BA /* BackgroundViewController.swift */,
+				19E0CBA3217F29A7007290BA /* JXPopupViewSpringDownwardAnimator.swift */,
+				19E0CBA5217F2A73007290BA /* JXPopupViewCustomAnimator.swift */,
+				19E0CB97217DA4BD007290BA /* TestAlertView.swift */,
+				19E0CB9C217F0023007290BA /* TestAlertView.xib */,
+			);
+			path = Example;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,6 +173,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19E0CBA4217F29A7007290BA /* JXPopupViewSpringDownwardAnimator.swift in Sources */,
+				19E0CBA6217F2A73007290BA /* JXPopupViewCustomAnimator.swift in Sources */,
 				19E0CBA1217F0342007290BA /* BackgroundViewController.swift in Sources */,
 				19E0CB85217D75D3007290BA /* ViewController.swift in Sources */,
 				19E0CB98217DA4BD007290BA /* TestAlertView.swift in Sources */,

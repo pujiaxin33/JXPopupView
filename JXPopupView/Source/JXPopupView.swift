@@ -212,70 +212,37 @@ public class JXBackgroundView: UIControl {
 public class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     public var displayDuration: TimeInterval = 0.25
     public var displayAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
+    var displayAnimateBlock: (()->())?
+
     public var dismissDuration: TimeInterval = 0.25
     public var dismissAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
-    public var customDisplayAnimateCallback: ((UIView, JXBackgroundView, @escaping ()->(), @escaping (Bool)->())->())?
-    public var customDismissAnimateCallback: ((UIView, JXBackgroundView, @escaping ()->(), @escaping (Bool)->())->())?
-    var targetRect = CGRect.zero
-    var sourceRect = CGRect.zero
-    var internalDisplayAnimateBlock: (()->())?
-    var internalDismissAnimateBlock: (()->())?
+    var dismissAnimateBlock: (()->())?
 
     public func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
-        internalDisplayAnimateBlock = {[weak self] in
-            guard self != nil else {
-                return
-            }
-            contentView.frame = self!.targetRect
-            backgroundView.alpha = 1
-        }
-        internalDismissAnimateBlock = {[weak self] in
-            guard self != nil else {
-                return
-            }
-            contentView.frame = self!.sourceRect
-            backgroundView.alpha = 0
-        }
     }
 
     public func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
-            if customDisplayAnimateCallback != nil {
-                customDisplayAnimateCallback!(contentView, backgroundView, {[weak self] in
-                    self?.internalDisplayAnimateBlock?()
-                }, { (finished) in
-                    completion()
-                })
-            }else {
-                UIView.animate(withDuration: displayDuration, delay: 0, options: displayAnimationOptions, animations: {
-                    self.internalDisplayAnimateBlock?()
-                }) { (finished) in
-                    completion()
-                }
+            UIView.animate(withDuration: displayDuration, delay: 0, options: displayAnimationOptions, animations: {
+                self.displayAnimateBlock?()
+            }) { (finished) in
+                completion()
             }
         }else {
-            self.internalDisplayAnimateBlock?()
+            self.displayAnimateBlock?()
             completion()
         }
     }
 
     public func dismiss(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
-            if customDismissAnimateCallback != nil {
-                customDismissAnimateCallback!(contentView, backgroundView, {[weak self] in
-                    self?.internalDismissAnimateBlock?()
-                }, { (finished) in
-                    completion()
-                })
-            }else {
-                UIView.animate(withDuration: dismissDuration, delay: 0, options: dismissAnimationOptions, animations: {
-                    self.internalDismissAnimateBlock?()
-                }) { (finished) in
-                    completion()
-                }
+            UIView.animate(withDuration: dismissDuration, delay: 0, options: dismissAnimationOptions, animations: {
+                self.dismissAnimateBlock?()
+            }) { (finished) in
+                completion()
             }
         }else {
-            self.internalDismissAnimateBlock?()
+            self.dismissAnimateBlock?()
             completion()
         }
     }
@@ -285,12 +252,19 @@ public class JXPopupViewLeftwardAnimator: JXPopupViewBaseAnimator {
     public override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
         var frame = contentView.frame
         frame.origin.x = containerView.bounds.size.width
-        sourceRect = frame
-        targetRect = contentView.frame
+        let sourceRect = frame
+        let targetRect = contentView.frame
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        super.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+        displayAnimateBlock = {
+            contentView.frame = targetRect
+            backgroundView.alpha = 1
+        }
+        dismissAnimateBlock = {
+            contentView.frame = sourceRect
+            backgroundView.alpha = 0
+        }
     }
 }
 
@@ -298,12 +272,19 @@ public class JXPopupViewRightwardAnimator: JXPopupViewBaseAnimator {
     public override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
         var frame = contentView.frame
         frame.origin.x = -contentView.bounds.size.width
-        sourceRect = frame
-        targetRect = contentView.frame
+        let sourceRect = frame
+        let targetRect = contentView.frame
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        super.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+        displayAnimateBlock = {
+            contentView.frame = targetRect
+            backgroundView.alpha = 1
+        }
+        dismissAnimateBlock = {
+            contentView.frame = sourceRect
+            backgroundView.alpha = 0
+        }
     }
 }
 
@@ -311,12 +292,19 @@ public class JXPopupViewUpwardAnimator: JXPopupViewBaseAnimator {
     public override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
         var frame = contentView.frame
         frame.origin.y = containerView.bounds.size.height
-        sourceRect = frame
-        targetRect = contentView.frame
+        let sourceRect = frame
+        let targetRect = contentView.frame
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        super.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+        displayAnimateBlock = {
+            contentView.frame = targetRect
+            backgroundView.alpha = 1
+        }
+        dismissAnimateBlock = {
+            contentView.frame = sourceRect
+            backgroundView.alpha = 0
+        }
     }
 }
 
@@ -324,12 +312,19 @@ public class JXPopupViewDownwardAnimator: JXPopupViewBaseAnimator {
     public override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
         var frame = contentView.frame
         frame.origin.y = -contentView.bounds.size.height
-        sourceRect = frame
-        targetRect = contentView.frame
+        let sourceRect = frame
+        let targetRect = contentView.frame
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        super.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+        displayAnimateBlock = {
+            contentView.frame = targetRect
+            backgroundView.alpha = 1
+        }
+        dismissAnimateBlock = {
+            contentView.frame = sourceRect
+            backgroundView.alpha = 0
+        }
     }
 }
 
@@ -338,11 +333,11 @@ public class JXPopupViewFadeInOutAnimator: JXPopupViewBaseAnimator {
         contentView.alpha = 0
         backgroundView.alpha = 0
 
-        internalDisplayAnimateBlock = {
+        displayAnimateBlock = {
             contentView.alpha = 1
             backgroundView.alpha = 1
         }
-        internalDismissAnimateBlock = {
+        dismissAnimateBlock = {
             contentView.alpha = 0
             backgroundView.alpha = 0
         }
@@ -355,12 +350,12 @@ public class JXPopupViewZoomInOutAnimator: JXPopupViewBaseAnimator {
         backgroundView.alpha = 0
         contentView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
 
-        internalDisplayAnimateBlock = {
+        displayAnimateBlock = {
             contentView.alpha = 1
             contentView.transform = .identity
             backgroundView.alpha = 1
         }
-        internalDismissAnimateBlock = {
+        dismissAnimateBlock = {
             contentView.alpha = 0
             contentView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
             backgroundView.alpha = 0
