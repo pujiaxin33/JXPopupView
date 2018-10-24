@@ -19,6 +19,18 @@
 		19E0CBA1217F0342007290BA /* BackgroundViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CBA0217F0342007290BA /* BackgroundViewController.swift */; };
 		19E0CBA4217F29A7007290BA /* JXPopupViewSpringDownwardAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CBA3217F29A7007290BA /* JXPopupViewSpringDownwardAnimator.swift */; };
 		19E0CBA6217F2A73007290BA /* JXPopupViewCustomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CBA5217F2A73007290BA /* JXPopupViewCustomAnimator.swift */; };
+		19E0CBB421801FDA007290BA /* Blurlight.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBA821801FD9007290BA /* Blurlight.gif */; };
+		19E0CBB521801FDA007290BA /* Downward.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBA921801FD9007290BA /* Downward.gif */; };
+		19E0CBB621801FDA007290BA /* BlurDark.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBAA21801FD9007290BA /* BlurDark.gif */; };
+		19E0CBB721801FDA007290BA /* FadeInOut.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBAB21801FDA007290BA /* FadeInOut.gif */; };
+		19E0CBB821801FDA007290BA /* CustomView.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBAC21801FDA007290BA /* CustomView.gif */; };
+		19E0CBB921801FDA007290BA /* Upward.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBAD21801FDA007290BA /* Upward.gif */; };
+		19E0CBBA21801FDA007290BA /* Rightward.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBAE21801FDA007290BA /* Rightward.gif */; };
+		19E0CBBB21801FDA007290BA /* Leftward.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBAF21801FDA007290BA /* Leftward.gif */; };
+		19E0CBBC21801FDA007290BA /* CustomAnimation.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBB021801FDA007290BA /* CustomAnimation.gif */; };
+		19E0CBBD21801FDA007290BA /* ZoomInOut.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBB121801FDA007290BA /* ZoomInOut.gif */; };
+		19E0CBBE21801FDA007290BA /* VCView.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBB221801FDA007290BA /* VCView.gif */; };
+		19E0CBBF21801FDA007290BA /* Spring.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBB321801FDA007290BA /* Spring.gif */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +48,18 @@
 		19E0CBA0217F0342007290BA /* BackgroundViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundViewController.swift; sourceTree = "<group>"; };
 		19E0CBA3217F29A7007290BA /* JXPopupViewSpringDownwardAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JXPopupViewSpringDownwardAnimator.swift; sourceTree = "<group>"; };
 		19E0CBA5217F2A73007290BA /* JXPopupViewCustomAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JXPopupViewCustomAnimator.swift; sourceTree = "<group>"; };
+		19E0CBA821801FD9007290BA /* Blurlight.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Blurlight.gif; sourceTree = "<group>"; };
+		19E0CBA921801FD9007290BA /* Downward.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Downward.gif; sourceTree = "<group>"; };
+		19E0CBAA21801FD9007290BA /* BlurDark.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = BlurDark.gif; sourceTree = "<group>"; };
+		19E0CBAB21801FDA007290BA /* FadeInOut.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = FadeInOut.gif; sourceTree = "<group>"; };
+		19E0CBAC21801FDA007290BA /* CustomView.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = CustomView.gif; sourceTree = "<group>"; };
+		19E0CBAD21801FDA007290BA /* Upward.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Upward.gif; sourceTree = "<group>"; };
+		19E0CBAE21801FDA007290BA /* Rightward.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Rightward.gif; sourceTree = "<group>"; };
+		19E0CBAF21801FDA007290BA /* Leftward.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Leftward.gif; sourceTree = "<group>"; };
+		19E0CBB021801FDA007290BA /* CustomAnimation.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = CustomAnimation.gif; sourceTree = "<group>"; };
+		19E0CBB121801FDA007290BA /* ZoomInOut.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ZoomInOut.gif; sourceTree = "<group>"; };
+		19E0CBB221801FDA007290BA /* VCView.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = VCView.gif; sourceTree = "<group>"; };
+		19E0CBB321801FDA007290BA /* Spring.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Spring.gif; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +100,7 @@
 				19E0CB89217D75D5007290BA /* Assets.xcassets */,
 				19E0CB8B217D75D5007290BA /* LaunchScreen.storyboard */,
 				19E0CB8E217D75D5007290BA /* Info.plist */,
+				19E0CBA721801FC1007290BA /* GIF */,
 			);
 			path = JXPopupView;
 			sourceTree = "<group>";
@@ -99,6 +124,25 @@
 				19E0CB9C217F0023007290BA /* TestAlertView.xib */,
 			);
 			path = Example;
+			sourceTree = "<group>";
+		};
+		19E0CBA721801FC1007290BA /* GIF */ = {
+			isa = PBXGroup;
+			children = (
+				19E0CBAA21801FD9007290BA /* BlurDark.gif */,
+				19E0CBA821801FD9007290BA /* Blurlight.gif */,
+				19E0CBB021801FDA007290BA /* CustomAnimation.gif */,
+				19E0CBAC21801FDA007290BA /* CustomView.gif */,
+				19E0CBA921801FD9007290BA /* Downward.gif */,
+				19E0CBAB21801FDA007290BA /* FadeInOut.gif */,
+				19E0CBAF21801FDA007290BA /* Leftward.gif */,
+				19E0CBAE21801FDA007290BA /* Rightward.gif */,
+				19E0CBB321801FDA007290BA /* Spring.gif */,
+				19E0CBAD21801FDA007290BA /* Upward.gif */,
+				19E0CBB221801FDA007290BA /* VCView.gif */,
+				19E0CBB121801FDA007290BA /* ZoomInOut.gif */,
+			);
+			path = GIF;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,10 +203,22 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19E0CBB721801FDA007290BA /* FadeInOut.gif in Resources */,
+				19E0CBBF21801FDA007290BA /* Spring.gif in Resources */,
+				19E0CBBB21801FDA007290BA /* Leftward.gif in Resources */,
+				19E0CBB921801FDA007290BA /* Upward.gif in Resources */,
+				19E0CBB521801FDA007290BA /* Downward.gif in Resources */,
 				19E0CB8D217D75D5007290BA /* LaunchScreen.storyboard in Resources */,
+				19E0CBBC21801FDA007290BA /* CustomAnimation.gif in Resources */,
 				19E0CB9D217F0023007290BA /* TestAlertView.xib in Resources */,
+				19E0CBBD21801FDA007290BA /* ZoomInOut.gif in Resources */,
 				19E0CB8A217D75D5007290BA /* Assets.xcassets in Resources */,
+				19E0CBBE21801FDA007290BA /* VCView.gif in Resources */,
 				19E0CB88217D75D3007290BA /* Main.storyboard in Resources */,
+				19E0CBBA21801FDA007290BA /* Rightward.gif in Resources */,
+				19E0CBB821801FDA007290BA /* CustomView.gif in Resources */,
+				19E0CBB621801FDA007290BA /* BlurDark.gif in Resources */,
+				19E0CBB421801FDA007290BA /* Blurlight.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
