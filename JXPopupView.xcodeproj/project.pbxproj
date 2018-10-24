@@ -12,7 +12,6 @@
 		19E0CB88217D75D3007290BA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CB86217D75D3007290BA /* Main.storyboard */; };
 		19E0CB8A217D75D5007290BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CB89217D75D5007290BA /* Assets.xcassets */; };
 		19E0CB8D217D75D5007290BA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CB8B217D75D5007290BA /* LaunchScreen.storyboard */; };
-		19E0CB96217D7603007290BA /* JXPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB95217D7603007290BA /* JXPopupView.swift */; };
 		19E0CB98217DA4BD007290BA /* TestAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB97217DA4BD007290BA /* TestAlertView.swift */; };
 		19E0CB9D217F0023007290BA /* TestAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CB9C217F0023007290BA /* TestAlertView.xib */; };
 		19E0CB9F217F0335007290BA /* AnimationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB9E217F0335007290BA /* AnimationViewController.swift */; };
@@ -31,6 +30,7 @@
 		19E0CBBD21801FDA007290BA /* ZoomInOut.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBB121801FDA007290BA /* ZoomInOut.gif */; };
 		19E0CBBE21801FDA007290BA /* VCView.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBB221801FDA007290BA /* VCView.gif */; };
 		19E0CBBF21801FDA007290BA /* Spring.gif in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CBB321801FDA007290BA /* Spring.gif */; };
+		19E0CBC221803D55007290BA /* JXPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CBC121803D55007290BA /* JXPopupView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +41,6 @@
 		19E0CB89217D75D5007290BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		19E0CB8C217D75D5007290BA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		19E0CB8E217D75D5007290BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		19E0CB95217D7603007290BA /* JXPopupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JXPopupView.swift; sourceTree = "<group>"; };
 		19E0CB97217DA4BD007290BA /* TestAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAlertView.swift; sourceTree = "<group>"; };
 		19E0CB9C217F0023007290BA /* TestAlertView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TestAlertView.xib; sourceTree = "<group>"; };
 		19E0CB9E217F0335007290BA /* AnimationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationViewController.swift; sourceTree = "<group>"; };
@@ -60,6 +59,7 @@
 		19E0CBB121801FDA007290BA /* ZoomInOut.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ZoomInOut.gif; sourceTree = "<group>"; };
 		19E0CBB221801FDA007290BA /* VCView.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = VCView.gif; sourceTree = "<group>"; };
 		19E0CBB321801FDA007290BA /* Spring.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Spring.gif; sourceTree = "<group>"; };
+		19E0CBC121803D55007290BA /* JXPopupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JXPopupView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,7 +92,7 @@
 		19E0CB81217D75D3007290BA /* JXPopupView */ = {
 			isa = PBXGroup;
 			children = (
-				19E0CB94217D75EE007290BA /* Source */,
+				19E0CBC021803D55007290BA /* Sources */,
 				19E0CBA2217F2940007290BA /* Example */,
 				19E0CB82217D75D3007290BA /* AppDelegate.swift */,
 				19E0CB84217D75D3007290BA /* ViewController.swift */,
@@ -103,14 +103,6 @@
 				19E0CBA721801FC1007290BA /* GIF */,
 			);
 			path = JXPopupView;
-			sourceTree = "<group>";
-		};
-		19E0CB94217D75EE007290BA /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				19E0CB95217D7603007290BA /* JXPopupView.swift */,
-			);
-			path = Source;
 			sourceTree = "<group>";
 		};
 		19E0CBA2217F2940007290BA /* Example */ = {
@@ -144,6 +136,14 @@
 			);
 			path = GIF;
 			sourceTree = "<group>";
+		};
+		19E0CBC021803D55007290BA /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				19E0CBC121803D55007290BA /* JXPopupView.swift */,
+			);
+			path = Sources;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -234,9 +234,9 @@
 				19E0CBA1217F0342007290BA /* BackgroundViewController.swift in Sources */,
 				19E0CB85217D75D3007290BA /* ViewController.swift in Sources */,
 				19E0CB98217DA4BD007290BA /* TestAlertView.swift in Sources */,
+				19E0CBC221803D55007290BA /* JXPopupView.swift in Sources */,
 				19E0CB9F217F0335007290BA /* AnimationViewController.swift in Sources */,
 				19E0CB83217D75D3007290BA /* AppDelegate.swift in Sources */,
-				19E0CB96217D7603007290BA /* JXPopupView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
