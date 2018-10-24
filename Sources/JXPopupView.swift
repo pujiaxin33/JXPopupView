@@ -259,6 +259,9 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     /// 消失动画的配置block
     open var dismissAnimateBlock: (()->())?
 
+    public init() {
+    }
+
     open func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
     }
 
