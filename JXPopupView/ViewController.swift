@@ -99,6 +99,8 @@ class ViewController: UIViewController {
         //配置交互
         popupView.isDismissible = true
         popupView.isInteractive = true
+        //可以设置为false，再点击弹框中的button试试？
+//        popupView.isInteractive = false
         popupView.isPenetrable = false
         //- 配置背景
         popupView.backgroundView.style = self.backgroundStyle
@@ -108,6 +110,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func dismissButtonClicked(_ sender: UIBarButtonItem) {
+        //通过extension提供的jx_popupView属性，获取JXPopupView进行操作，可以不用全局持有JXPopupView属性
         contentView.jx_popupView?.dismiss(animated: true, completion: nil)
     }
 }
