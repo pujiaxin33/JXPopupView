@@ -74,11 +74,45 @@ contentView.jx_popupView?.dismiss(animated: true, completion: nil)
 
 # 动画自定义
 
+## `JXPopupViewAnimationProtocol`协议方法
+
+```
+/// 初始化配置动画驱动器
+    ///
+    /// - Parameters:
+    ///   - contentView: 自定义的弹框视图
+    ///   - backgroundView: 背景视图
+    ///   - containerView: 展示弹框的视图
+    /// - Returns: void
+    func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView)
+
+    /// 处理展示动画
+    ///
+    /// - Parameters:
+    ///   - contentView: 自定义的弹框视图
+    ///   - backgroundView: 背景视图
+    ///   - animated: 是否需要动画
+    ///   - completion: 动画完成后的回调
+    /// - Returns: void
+    func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping ()->())
+
+    /// 处理消失动画
+    ///
+    /// - Parameters:
+    ///   - contentView: 自定义的弹框视图
+    ///   - backgroundView: 背景视图
+    ///   - animated: 是否需要动画
+    ///   - completion: 动画完成后的回调
+    func dismiss(contentView: UIView, backgroundView: JXBackgroundView,animated: Bool, completion: @escaping ()->())
+```
+
+## 自定义动画建议
+
 - 现有动画微调
-继承对应的animator，重载协议方法，进行微调
+继承对应的animator，重载协议方法，进行微调。参考demo工程的`JXPopupViewSpringDownwardAnimator`类。
 
 - 完全自定义动画
-可以继承`JXPopupViewBaseAnimator`或者自己新建一个类，遵从`JXPopupViewAnimationProtocol`协议，实现对应方法即可。
+可以继承`JXPopupViewBaseAnimator`或者自己新建一个类，遵从`JXPopupViewAnimationProtocol`协议，实现对应方法即可。参考demo工程的`JXPopupViewCustomAnimator`类
 
 # 证书
 
