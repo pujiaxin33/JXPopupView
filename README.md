@@ -4,9 +4,9 @@
 # 特性
 
 - 默认提供丰富的动画效果，而且可以灵活的扩展配置，只要遵从并实现`JXPopupViewAnimationProtocol`协议即可；
-- 使用灵活，通过view封装，可以在任何view上面展示，并不局限于UIViewController；
-- 背景配置方便，借鉴了`MBProgressHUD`对背景视图的处理逻辑，可以灵活配置；
-- 交互细节可配置，提供了`isDismissible`、`isInteractive`、`isPenetrable`属性进行配置
+- 使用范围更广，通过view封装，可以在任何view上面展示，并不局限于UIViewController；
+- 弹框背景配置灵活，借鉴了`MBProgressHUD`对背景视图的处理逻辑；
+- 交互细节可配置，提供了`isDismissible`、`isInteractive`、`isPenetrable`属性进行配置；
 
 # 预览
 
