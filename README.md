@@ -45,6 +45,14 @@ Swift 4.2编写，支持iOS9以上
 
 # 安装
 
+## CocoaPods
+
+在Podfile文件里面添加
+```
+pod 'JXPopupView'
+```
+然后再pod install（最好先pod update）
+
 # 使用
 
 ```
