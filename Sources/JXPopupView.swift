@@ -83,7 +83,7 @@ public class JXPopupView: UIView {
     public var willDismissCallback: (()->())?
     public var didDismissCallback: (()->())?
 
-    let containerView: UIView
+    weak var containerView: UIView!
     let contentView: UIView
     let animator: JXPopupViewAnimationProtocol
     var isAnimating = false
