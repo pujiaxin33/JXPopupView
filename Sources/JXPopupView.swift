@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol JXPopupViewAnimationProtocol: AnyObject {
+public protocol JXPopupViewAnimationProtocol {
     /// 初始化配置动画驱动器
     ///
     /// - Parameters:
@@ -83,18 +83,10 @@ public class JXPopupView: UIView {
     public var willDismissCallback: (()->())?
     public var didDismissCallback: (()->())?
 
-    weak var containerView: UIView!
+    unowned let containerView: UIView
     let contentView: UIView
     let animator: JXPopupViewAnimationProtocol
     var isAnimating = false
-
-    deinit {
-        willDispalyCallback = nil
-        didDispalyCallback = nil
-        willDismissCallback = nil
-        didDismissCallback = nil
-    }
-
 
     /// 指定的s初始化器
     ///
@@ -102,7 +94,7 @@ public class JXPopupView: UIView {
     ///   - containerView: 展示弹框的视图，可以是window、vc.view、自定义视图等
     ///   - contentView: 自定义的弹框视图
     ///   - animator: 遵从协议JXPopupViewAnimationProtocol的动画驱动器
-    public init(containerView: UIView, contentView: UIView, animator: JXPopupViewAnimationProtocol) {
+    public init(containerView: UIView, contentView: UIView, animator: JXPopupViewAnimationProtocol = JXPopupViewFadeInOutAnimator()) {
         self.containerView = containerView
         self.contentView = contentView
         self.animator = animator
@@ -181,10 +173,8 @@ public class JXPopupView: UIView {
 }
 
 public extension UIView {
-
-    /// 便利获取JXPopupView
-    var jx_popupView: JXPopupView? {
-        if self.superview?.isKind(of: JXPopupView.classForCoder()) == true {
+    func popupView() -> JXPopupView? {
+        if self.superview?.isKind(of: JXPopupView.self) == true {
             return self.superview as? JXPopupView
         }
         return nil
@@ -252,12 +242,12 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     open var displayDuration: TimeInterval = 0.25
     open var displayAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
     /// 展示动画的配置block
-    open var displayAnimateBlock: (()->())?
+    open var displayAnimationBlock: (()->())?
 
     open var dismissDuration: TimeInterval = 0.25
     open var dismissAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
     /// 消失动画的配置block
-    open var dismissAnimateBlock: (()->())?
+    open var dismissAnimationBlock: (()->())?
 
     public init() {
     }
@@ -268,12 +258,12 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     open func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
             UIView.animate(withDuration: displayDuration, delay: 0, options: displayAnimationOptions, animations: {
-                self.displayAnimateBlock?()
+                self.displayAnimationBlock?()
             }) { (finished) in
                 completion()
             }
         }else {
-            self.displayAnimateBlock?()
+            self.displayAnimationBlock?()
             completion()
         }
     }
@@ -281,12 +271,12 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     open func dismiss(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
             UIView.animate(withDuration: dismissDuration, delay: 0, options: dismissAnimationOptions, animations: {
-                self.dismissAnimateBlock?()
+                self.dismissAnimationBlock?()
             }) { (finished) in
                 completion()
             }
         }else {
-            self.dismissAnimateBlock?()
+            self.dismissAnimationBlock?()
             completion()
         }
     }
@@ -301,11 +291,11 @@ open class JXPopupViewLeftwardAnimator: JXPopupViewBaseAnimator {
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        displayAnimateBlock = {
+        displayAnimationBlock = {
             contentView.frame = targetRect
             backgroundView.alpha = 1
         }
-        dismissAnimateBlock = {
+        dismissAnimationBlock = {
             contentView.frame = sourceRect
             backgroundView.alpha = 0
         }
@@ -321,11 +311,11 @@ open class JXPopupViewRightwardAnimator: JXPopupViewBaseAnimator {
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        displayAnimateBlock = {
+        displayAnimationBlock = {
             contentView.frame = targetRect
             backgroundView.alpha = 1
         }
-        dismissAnimateBlock = {
+        dismissAnimationBlock = {
             contentView.frame = sourceRect
             backgroundView.alpha = 0
         }
@@ -341,11 +331,11 @@ open class JXPopupViewUpwardAnimator: JXPopupViewBaseAnimator {
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        displayAnimateBlock = {
+        displayAnimationBlock = {
             contentView.frame = targetRect
             backgroundView.alpha = 1
         }
-        dismissAnimateBlock = {
+        dismissAnimationBlock = {
             contentView.frame = sourceRect
             backgroundView.alpha = 0
         }
@@ -361,11 +351,11 @@ open class JXPopupViewDownwardAnimator: JXPopupViewBaseAnimator {
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        displayAnimateBlock = {
+        displayAnimationBlock = {
             contentView.frame = targetRect
             backgroundView.alpha = 1
         }
-        dismissAnimateBlock = {
+        dismissAnimationBlock = {
             contentView.frame = sourceRect
             backgroundView.alpha = 0
         }
@@ -377,11 +367,11 @@ open class JXPopupViewFadeInOutAnimator: JXPopupViewBaseAnimator {
         contentView.alpha = 0
         backgroundView.alpha = 0
 
-        displayAnimateBlock = {
+        displayAnimationBlock = {
             contentView.alpha = 1
             backgroundView.alpha = 1
         }
-        dismissAnimateBlock = {
+        dismissAnimationBlock = {
             contentView.alpha = 0
             backgroundView.alpha = 0
         }
@@ -394,12 +384,12 @@ open class JXPopupViewZoomInOutAnimator: JXPopupViewBaseAnimator {
         backgroundView.alpha = 0
         contentView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
 
-        displayAnimateBlock = {
+        displayAnimationBlock = {
             contentView.alpha = 1
             contentView.transform = .identity
             backgroundView.alpha = 1
         }
-        dismissAnimateBlock = {
+        dismissAnimationBlock = {
             contentView.alpha = 0
             contentView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
             backgroundView.alpha = 0

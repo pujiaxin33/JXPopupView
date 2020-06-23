@@ -26,11 +26,11 @@ class JXPopupViewCustomAnimator: JXPopupViewBaseAnimator {
         contentView.frame = sourceRect
         backgroundView.alpha = 0
 
-        displayAnimateBlock = {
+        displayAnimationBlock = {
             contentView.frame = targetRect
             backgroundView.alpha = 1
         }
-        dismissAnimateBlock = {
+        dismissAnimationBlock = {
             contentView.frame = dismissRect
             backgroundView.alpha = 0
         }

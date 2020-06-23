@@ -13,12 +13,12 @@ class JXPopupViewSpringDownwardAnimator: JXPopupViewDownwardAnimator {
     public override func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.7, options: displayAnimationOptions, animations: {
-                self.displayAnimateBlock?()
+                self.displayAnimationBlock?()
             }) { (finished) in
                 completion()
             }
         }else {
-            self.displayAnimateBlock?()
+            self.displayAnimationBlock?()
             completion()
         }
     }
