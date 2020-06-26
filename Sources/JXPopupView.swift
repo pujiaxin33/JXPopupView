@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol JXPopupViewAnimationProtocol {
+public protocol JXPopupViewAnimator {
     /// 初始化配置动画驱动器
     ///
     /// - Parameters:
@@ -16,7 +16,7 @@ public protocol JXPopupViewAnimationProtocol {
     ///   - backgroundView: 背景视图
     ///   - containerView: 展示弹框的视图
     /// - Returns: void
-    func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView)
+    func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView)
 
     /// 处理展示动画
     ///
@@ -85,7 +85,7 @@ public class JXPopupView: UIView {
 
     unowned let containerView: UIView
     let contentView: UIView
-    let animator: JXPopupViewAnimationProtocol
+    let animator: JXPopupViewAnimator
     var isAnimating = false
 
     /// 指定的s初始化器
@@ -94,7 +94,7 @@ public class JXPopupView: UIView {
     ///   - containerView: 展示弹框的视图，可以是window、vc.view、自定义视图等
     ///   - contentView: 自定义的弹框视图
     ///   - animator: 遵从协议JXPopupViewAnimationProtocol的动画驱动器
-    public init(containerView: UIView, contentView: UIView, animator: JXPopupViewAnimationProtocol = JXPopupViewFadeInOutAnimator()) {
+    public init(containerView: UIView, contentView: UIView, animator: JXPopupViewAnimator = JXPopupViewFadeInOutAnimator()) {
         self.containerView = containerView
         self.contentView = contentView
         self.animator = animator
@@ -107,7 +107,7 @@ public class JXPopupView: UIView {
         addSubview(backgroundView)
         addSubview(contentView)
 
-        animator.setup(contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+        animator.setup(popupView: self, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -238,7 +238,9 @@ public class JXBackgroundView: UIControl {
     }
 }
 
-open class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
+open class JXPopupViewBaseAnimator: JXPopupViewAnimator {
+    open var layout: Layout
+
     open var displayDuration: TimeInterval = 0.25
     open var displayAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
     /// 展示动画的配置block
@@ -249,10 +251,122 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
     /// 消失动画的配置block
     open var dismissAnimationBlock: (()->())?
 
-    public init() {
+    public enum Layout {
+        case center(Center)
+        case top(Top)
+        case bottom(Bottom)
+        case frame(CGRect)
+
+        func horizontalOffset() -> CGFloat {
+            switch self {
+            case .center(let center):
+                return center.horizontalOffset
+            case .top(let top):
+                return top.horizontalOffset
+            case .bottom(let bottom):
+                return bottom.horizontalOffset
+            case .frame(_):
+                return 0
+            }
+        }
+
+        func verticalOffset() -> CGFloat {
+            switch self {
+            case .center(let center):
+                return center.verticalOffset
+            case .top(let top):
+                return top.topMargin
+            case .bottom(let bottom):
+                return bottom.bottomMargin
+            case .frame(_):
+                return 0
+            }
+        }
+
+        public struct Center {
+            public var verticalOffset: CGFloat
+            public var horizontalOffset: CGFloat
+            public var width: CGFloat?
+            public var height: CGFloat?
+            public static let zero = Center()
+
+            public init(verticalOffset: CGFloat = 0, horizontalOffset: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
+                self.verticalOffset = verticalOffset
+                self.horizontalOffset = horizontalOffset
+                self.width = width
+                self.height = height
+            }
+        }
+
+        public struct Top {
+            public var topMargin: CGFloat
+            public var horizontalOffset: CGFloat
+            public var width: CGFloat?
+            public var height: CGFloat?
+            public static let zero = Top()
+
+            public init(topMargin: CGFloat = 10, horizontalOffset: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
+                self.topMargin = topMargin
+                self.horizontalOffset = horizontalOffset
+                self.width = width
+                self.height = height
+            }
+        }
+
+        public struct Bottom {
+            public var bottomMargin: CGFloat
+            public var horizontalOffset: CGFloat
+            public var width: CGFloat?
+            public var height: CGFloat?
+
+            public init(bottomMargin: CGFloat = 10, horizontalOffset: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
+                self.bottomMargin = bottomMargin
+                self.horizontalOffset = horizontalOffset
+                self.width = width
+                self.height = height
+            }
+        }
     }
 
-    open func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+    public init(layout: Layout = .center(.zero)) {
+        self.layout = layout
+    }
+
+    open func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+        switch layout {
+        case .center(let center):
+            contentView.translatesAutoresizingMaskIntoConstraints = false
+            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: center.horizontalOffset).isActive = true
+            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor, constant: center.verticalOffset).isActive = true
+            if let width = center.width {
+                contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
+            }
+            if let height = center.height {
+                contentView.heightAnchor.constraint(equalToConstant: height).isActive = true
+            }
+        case .top(let top):
+            contentView.translatesAutoresizingMaskIntoConstraints = false
+            contentView.topAnchor.constraint(equalTo: popupView.topAnchor, constant: top.topMargin).isActive = true
+            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: top.horizontalOffset).isActive = true
+            if let width = top.width {
+                contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
+            }
+            if let height = top.height {
+                contentView.heightAnchor.constraint(equalToConstant: height).isActive = true
+            }
+        case .bottom(let bottom):
+            contentView.translatesAutoresizingMaskIntoConstraints = false
+            contentView.topAnchor.constraint(equalTo: popupView.topAnchor, constant: bottom.bottomMargin).isActive = true
+            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: bottom.horizontalOffset).isActive = true
+            if let width = bottom.width {
+                contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
+            }
+            if let height = bottom.height {
+                contentView.heightAnchor.constraint(equalToConstant: height).isActive = true
+            }
+        case .frame(let frame):
+            contentView.frame = frame
+        }
     }
 
     open func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
@@ -283,87 +397,141 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimationProtocol {
 }
 
 open class JXPopupViewLeftwardAnimator: JXPopupViewBaseAnimator {
-    open override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
-        var frame = contentView.frame
-        frame.origin.x = containerView.bounds.size.width
-        let sourceRect = frame
-        let targetRect = contentView.frame
-        contentView.frame = sourceRect
-        backgroundView.alpha = 0
+    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
-        displayAnimationBlock = {
-            contentView.frame = targetRect
+        let fromClosure = { [weak self] in
+            guard let self = self else { return }
+            if case .frame(var frame) = self.layout {
+                frame.origin.x = -frame.size.width
+                contentView.frame = frame
+            }else {
+                popupView.centerXConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
+            }
+            popupView.layoutIfNeeded()
+            backgroundView.alpha = 0
+        }
+        fromClosure()
+
+        displayAnimationBlock = { [weak self] in
+            guard let self = self else { return }
             backgroundView.alpha = 1
+            if case .frame(let frame) = self.layout {
+                contentView.frame = frame
+            }else {
+                popupView.centerXConstraint(firstItem: contentView)?.constant = self.layout.horizontalOffset()
+            }
+            popupView.layoutIfNeeded()
         }
         dismissAnimationBlock = {
-            contentView.frame = sourceRect
-            backgroundView.alpha = 0
+            fromClosure()
         }
     }
 }
 
 open class JXPopupViewRightwardAnimator: JXPopupViewBaseAnimator {
-    open override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
-        var frame = contentView.frame
-        frame.origin.x = -contentView.bounds.size.width
-        let sourceRect = frame
-        let targetRect = contentView.frame
-        contentView.frame = sourceRect
-        backgroundView.alpha = 0
+    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
-        displayAnimationBlock = {
-            contentView.frame = targetRect
+        let fromClosure = { [weak self] in
+            guard let self = self else { return }
+            if case .frame(var frame) = self.layout {
+                frame.origin.x = popupView.bounds.size.width
+                contentView.frame = frame
+            }else {
+                popupView.centerXConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
+            }
+            popupView.layoutIfNeeded()
+            backgroundView.alpha = 0
+        }
+        fromClosure()
+
+        displayAnimationBlock = { [weak self] in
+            guard let self = self else { return }
             backgroundView.alpha = 1
+            if case .frame(let frame) = self.layout {
+                contentView.frame = frame
+            }else {
+                popupView.centerXConstraint(firstItem: contentView)?.constant = self.layout.horizontalOffset()
+            }
+            popupView.layoutIfNeeded()
         }
         dismissAnimationBlock = {
-            contentView.frame = sourceRect
-            backgroundView.alpha = 0
+            fromClosure()
         }
     }
 }
 
 open class JXPopupViewUpwardAnimator: JXPopupViewBaseAnimator {
-    open override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
-        var frame = contentView.frame
-        frame.origin.y = containerView.bounds.size.height
-        let sourceRect = frame
-        let targetRect = contentView.frame
-        contentView.frame = sourceRect
-        backgroundView.alpha = 0
+    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
-        displayAnimationBlock = {
-            contentView.frame = targetRect
+        let fromClosure = { [weak self] in
+            guard let self = self else { return }
+            if case .frame(var frame) = self.layout {
+                frame.origin.y = popupView.frame.size.height
+                contentView.frame = frame
+            }else {
+                popupView.centerYConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.height/2 + contentView.bounds.size.height/2)
+            }
+            popupView.layoutIfNeeded()
+            backgroundView.alpha = 0
+        }
+        fromClosure()
+
+        displayAnimationBlock = { [weak self] in
+            guard let self = self else { return }
             backgroundView.alpha = 1
+            if case .frame(let frame) = self.layout {
+                contentView.frame = frame
+            }else {
+                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.verticalOffset()
+            }
+            popupView.layoutIfNeeded()
         }
         dismissAnimationBlock = {
-            contentView.frame = sourceRect
-            backgroundView.alpha = 0
+            fromClosure()
         }
     }
 }
 
 open class JXPopupViewDownwardAnimator: JXPopupViewBaseAnimator {
-    open override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
-        var frame = contentView.frame
-        frame.origin.y = -contentView.bounds.size.height
-        let sourceRect = frame
-        let targetRect = contentView.frame
-        contentView.frame = sourceRect
-        backgroundView.alpha = 0
+    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
-        displayAnimationBlock = {
-            contentView.frame = targetRect
+        let fromClosure = { [weak self] in
+            guard let self = self else { return }
+            if case .frame(var frame) = self.layout {
+                frame.origin.y = popupView.frame.size.height
+                contentView.frame = frame
+            }else {
+                popupView.centerYConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.height/2 + contentView.bounds.size.height/2)
+            }
+            popupView.layoutIfNeeded()
+            backgroundView.alpha = 0
+        }
+        fromClosure()
+
+        displayAnimationBlock = { [weak self] in
+            guard let self = self else { return }
             backgroundView.alpha = 1
+            if case .frame(let frame) = self.layout {
+                contentView.frame = frame
+            }else {
+                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.verticalOffset()
+            }
+            popupView.layoutIfNeeded()
         }
         dismissAnimationBlock = {
-            contentView.frame = sourceRect
-            backgroundView.alpha = 0
+            fromClosure()
         }
     }
 }
 
 open class JXPopupViewFadeInOutAnimator: JXPopupViewBaseAnimator {
-    open override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+
         contentView.alpha = 0
         backgroundView.alpha = 0
 
@@ -379,7 +547,9 @@ open class JXPopupViewFadeInOutAnimator: JXPopupViewBaseAnimator {
 }
 
 open class JXPopupViewZoomInOutAnimator: JXPopupViewBaseAnimator {
-    open override func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+
         contentView.alpha = 0
         backgroundView.alpha = 0
         contentView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
@@ -394,5 +564,24 @@ open class JXPopupViewZoomInOutAnimator: JXPopupViewBaseAnimator {
             contentView.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
             backgroundView.alpha = 0
         }
+    }
+}
+
+
+extension UIView {
+    func widthConstraint(firstItem: UIView) -> NSLayoutConstraint? {
+        return constraints.first { $0.firstAttribute == .width && $0.firstItem as? UIView == firstItem }
+    }
+
+    func heightConstraint(firstItem: UIView) -> NSLayoutConstraint? {
+        return constraints.first { $0.firstAttribute == .height && $0.firstItem as? UIView == firstItem }
+    }
+
+    func centerXConstraint(firstItem: UIView) -> NSLayoutConstraint? {
+        return constraints.first { $0.firstAttribute == .centerX && $0.firstItem as? UIView == firstItem }
+    }
+
+    func centerYConstraint(firstItem: UIView) -> NSLayoutConstraint? {
+        return constraints.first { $0.firstAttribute == .centerY && $0.firstItem as? UIView == firstItem }
     }
 }

@@ -68,16 +68,12 @@ class ViewController: UIViewController {
     }
 
     func displayPopupView() {
-        //- 确定contentView的目标frame
         contentView = Bundle.main.loadNibNamed("TestAlertView", owner: nil, options: nil)?.first as? TestAlertView
-        let x: CGFloat = (containerView.bounds.size.width - 200)/2
-        let y: CGFloat = (containerView.bounds.size.height - 200)/2
-        contentView.frame = CGRect(x: x, y: y, width: 200, height: 200)
-        //- 确定动画效果
-        var animator: JXPopupViewAnimationProtocol?
+        //- 确定动画效果及其布局
+        var animator: JXPopupViewAnimator?
         switch animationIndex {
         case 0:
-            animator = JXPopupViewFadeInOutAnimator()
+            animator = JXPopupViewFadeInOutAnimator(layout: .center(.init(verticalOffset: 100, width: 300, height: 300)))
         case 1:
             animator = JXPopupViewZoomInOutAnimator()
         case 2:
@@ -85,7 +81,7 @@ class ViewController: UIViewController {
         case 3:
             animator = JXPopupViewDownwardAnimator()
         case 4:
-            animator = JXPopupViewLeftwardAnimator()
+            animator = JXPopupViewLeftwardAnimator(layout: .center(.init(verticalOffset: 100, width: 300, height: 300)))
         case 5:
             animator = JXPopupViewRightwardAnimator()
         case 6:
@@ -95,6 +91,7 @@ class ViewController: UIViewController {
         default:
             break
         }
+        animator = JXPopupViewLeftwardAnimator(layout: .center(.zero))
         let popupView = JXPopupView(containerView: containerView, contentView: contentView, animator: animator!)
         //配置交互
         popupView.isDismissible = true
