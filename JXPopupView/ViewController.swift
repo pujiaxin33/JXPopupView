@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
     var contentView: TestAlertView!
-    var backgroundStyle = JXPopupViewBackgroundStyle.solidColor
+    var backgroundStyle: PopupView.BackgroundView.BackgroundStyle = .solidColor
     var backgroundColor = UIColor.black.withAlphaComponent(0.3)
     var backgroundEffectStyle = UIBlurEffect.Style.light
     var animationIndex: Int = 0
@@ -19,7 +19,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
     }
 
     @IBAction func backgroundItemClicked(_ sender: UIBarButtonItem) {
@@ -70,29 +70,29 @@ class ViewController: UIViewController {
     func displayPopupView() {
         contentView = Bundle.main.loadNibNamed("TestAlertView", owner: nil, options: nil)?.first as? TestAlertView
         //- 确定动画效果及其布局
-        var animator: JXPopupViewAnimator?
+        var animator: PopupViewAnimator?
         switch animationIndex {
         case 0:
-            animator = JXPopupViewFadeInOutAnimator(layout: .center(.init(verticalOffset: 100, width: 300, height: 300)))
+            animator = FadeInOutAnimator(layout: .center(.init(verticalOffset: 100, width: 300, height: 300)))
         case 1:
-            animator = JXPopupViewZoomInOutAnimator()
+            animator = ZoomInOutAnimator()
         case 2:
-            animator = JXPopupViewUpwardAnimator()
+            animator = UpwardAnimator()
         case 3:
-            animator = JXPopupViewDownwardAnimator()
+            animator = DownwardAnimator()
         case 4:
-            animator = JXPopupViewLeftwardAnimator(layout: .center(.init(verticalOffset: 100, width: 300, height: 300)))
+            animator = LeftwardAnimator(layout: .center(.init(verticalOffset: 100, width: 300, height: 300)))
         case 5:
-            animator = JXPopupViewRightwardAnimator()
+            animator = RightwardAnimator()
         case 6:
-            animator = JXPopupViewSpringDownwardAnimator()
+            animator = SpringDownwardAnimator()
         case 7:
-            animator = JXPopupViewCustomAnimator()
+            animator = CustomAnimator()
         default:
             break
         }
-        animator = JXPopupViewLeftwardAnimator(layout: .center(.zero))
-        let popupView = JXPopupView(containerView: containerView, contentView: contentView, animator: animator!)
+        animator = LeftwardAnimator(layout: .center(.zero))
+        let popupView = PopupView(containerView: containerView, contentView: contentView, animator: animator!)
         //配置交互
         popupView.isDismissible = true
         popupView.isInteractive = true

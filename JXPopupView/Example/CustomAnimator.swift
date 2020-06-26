@@ -9,9 +9,9 @@
 import UIKit
 
 //从左上角到中间，再到右下角
-class JXPopupViewCustomAnimator: JXPopupViewBaseAnimator {
+class CustomAnimator: BaseAnimator {
 
-    override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+    override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
         var frame = contentView.frame
         frame.origin.x = -contentView.bounds.size.width
         frame.origin.y = -contentView.bounds.size.height

@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol JXPopupViewAnimator {
+public protocol PopupViewAnimator {
     /// 初始化配置动画驱动器
     ///
     /// - Parameters:
@@ -16,7 +16,7 @@ public protocol JXPopupViewAnimator {
     ///   - backgroundView: 背景视图
     ///   - containerView: 展示弹框的视图
     /// - Returns: void
-    func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView)
+    func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView)
 
     /// 处理展示动画
     ///
@@ -26,7 +26,7 @@ public protocol JXPopupViewAnimator {
     ///   - animated: 是否需要动画
     ///   - completion: 动画完成后的回调
     /// - Returns: void
-    func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping ()->())
+    func display(contentView: UIView, backgroundView: PopupView.BackgroundView, animated: Bool, completion: @escaping ()->())
 
     /// 处理消失动画
     ///
@@ -35,19 +35,13 @@ public protocol JXPopupViewAnimator {
     ///   - backgroundView: 背景视图
     ///   - animated: 是否需要动画
     ///   - completion: 动画完成后的回调
-    func dismiss(contentView: UIView, backgroundView: JXBackgroundView,animated: Bool, completion: @escaping ()->())
+    func dismiss(contentView: UIView, backgroundView: PopupView.BackgroundView, animated: Bool, completion: @escaping ()->())
 }
-
-public enum JXPopupViewBackgroundStyle {
-    case solidColor
-    case blur
-}
-
 
 /// 一个轻量级的自定义视图弹框框架，主要提供动画、背景的灵活配置，功能简单却强大
 /// 通过面对协议JXPopupViewAnimationProtocol，实现对动画的灵活配置
 /// 通过JXBackgroundView对背景进行自定义配置
-public class JXPopupView: UIView {
+public class PopupView: UIView {
     /*
      举个例子
      /////////////////////
@@ -77,7 +71,7 @@ public class JXPopupView: UIView {
     }
     public var isInteractive = true
     public var isPenetrable = false
-    public let backgroundView: JXBackgroundView
+    public let backgroundView: BackgroundView
     public var willDispalyCallback: (()->())?
     public var didDispalyCallback: (()->())?
     public var willDismissCallback: (()->())?
@@ -85,7 +79,7 @@ public class JXPopupView: UIView {
 
     unowned let containerView: UIView
     let contentView: UIView
-    let animator: JXPopupViewAnimator
+    let animator: PopupViewAnimator
     var isAnimating = false
 
     /// 指定的s初始化器
@@ -94,16 +88,16 @@ public class JXPopupView: UIView {
     ///   - containerView: 展示弹框的视图，可以是window、vc.view、自定义视图等
     ///   - contentView: 自定义的弹框视图
     ///   - animator: 遵从协议JXPopupViewAnimationProtocol的动画驱动器
-    public init(containerView: UIView, contentView: UIView, animator: JXPopupViewAnimator = JXPopupViewFadeInOutAnimator()) {
+    public init(containerView: UIView, contentView: UIView, animator: PopupViewAnimator = FadeInOutAnimator()) {
         self.containerView = containerView
         self.contentView = contentView
         self.animator = animator
-        backgroundView = JXBackgroundView(frame: CGRect.zero)
+        backgroundView = BackgroundView(frame: containerView.bounds)
         
         super.init(frame: containerView.bounds)
 
         backgroundView.isUserInteractionEnabled = isDismissible
-        backgroundView.addTarget(self, action: #selector(backgroundViewClicked), for: UIControl.Event.touchUpInside)
+        backgroundView.addTarget(self, action: #selector(backgroundViewClicked), for: .touchUpInside)
         addSubview(backgroundView)
         addSubview(contentView)
 
@@ -130,12 +124,6 @@ public class JXPopupView: UIView {
                 return nil
             }
         }
-    }
-
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-
-        backgroundView.frame = self.bounds
     }
 
     public func display(animated: Bool, completion: (()->())?) {
@@ -172,73 +160,78 @@ public class JXPopupView: UIView {
     }
 }
 
+extension PopupView {
+
+    public class BackgroundView: UIControl {
+
+        public enum BackgroundStyle {
+            case solidColor
+            case blur
+        }
+
+        public var style = BackgroundStyle.solidColor {
+            didSet {
+
+                refreshBackgroundStyle()
+            }
+        }
+        public var blurEffectStyle = UIBlurEffect.Style.dark {
+            didSet {
+                refreshBackgroundStyle()
+            }
+        }
+        /// 无论style是什么值，color都会生效。如果你使用blur的时候，觉得叠加上该color过于黑暗时，可以置为clearColor。
+        public var color = UIColor.black.withAlphaComponent(0.3) {
+            didSet {
+                backgroundColor = color
+            }
+        }
+        var effectView: UIVisualEffectView?
+
+        public override init(frame: CGRect) {
+            super.init(frame: frame)
+
+            refreshBackgroundStyle()
+            backgroundColor = color
+            layer.allowsGroupOpacity = false
+        }
+
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            let view = super.hitTest(point, with: event)
+            if view == effectView {
+                //将event交给backgroundView处理
+                return self
+            }
+            return view
+        }
+
+        func refreshBackgroundStyle() {
+            if style == .solidColor {
+                effectView?.removeFromSuperview()
+                effectView = nil
+            }else {
+                effectView = UIVisualEffectView(effect: UIBlurEffect(style: self.blurEffectStyle))
+                effectView?.frame = bounds
+                addSubview(effectView!)
+            }
+        }
+    }
+}
+
 public extension UIView {
-    func popupView() -> JXPopupView? {
-        if self.superview?.isKind(of: JXPopupView.self) == true {
-            return self.superview as? JXPopupView
+    func popupView() -> PopupView? {
+        if self.superview?.isKind(of: PopupView.self) == true {
+            return self.superview as? PopupView
         }
         return nil
     }
 }
 
-public class JXBackgroundView: UIControl {
-    public var style = JXPopupViewBackgroundStyle.solidColor {
-        didSet {
-            refreshBackgroundStyle()
-        }
-    }
-    public var blurEffectStyle = UIBlurEffect.Style.dark {
-        didSet {
-            refreshBackgroundStyle()
-        }
-    }
-    /// 无论style是什么值，color都会生效。如果你使用blur的时候，觉得叠加上该color过于黑暗时，可以置为clearColor。
-    public var color = UIColor.black.withAlphaComponent(0.3) {
-        didSet {
-            backgroundColor = color
-        }
-    }
-    var effectView: UIVisualEffectView?
-
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        refreshBackgroundStyle()
-        backgroundColor = color
-        layer.allowsGroupOpacity = false
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let view = super.hitTest(point, with: event)
-        if view == effectView {
-            //将event交给backgroundView处理
-            return self
-        }
-        return view
-    }
-
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-
-        effectView?.frame = self.bounds
-    }
-
-    func refreshBackgroundStyle() {
-        if style == .solidColor {
-            effectView?.removeFromSuperview()
-            effectView = nil
-        }else {
-            effectView = UIVisualEffectView(effect: UIBlurEffect(style: self.blurEffectStyle))
-            addSubview(effectView!)
-        }
-    }
-}
-
-open class JXPopupViewBaseAnimator: JXPopupViewAnimator {
+open class BaseAnimator: PopupViewAnimator {
     open var layout: Layout
 
     open var displayDuration: TimeInterval = 0.25
@@ -332,7 +325,7 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimator {
         self.layout = layout
     }
 
-    open func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+    open func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
         switch layout {
         case .center(let center):
             contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -367,9 +360,11 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimator {
         case .frame(let frame):
             contentView.frame = frame
         }
+//        popupView.setNeedsLayout()
+//        popupView.layoutIfNeeded()
     }
 
-    open func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
+    open func display(contentView: UIView, backgroundView: PopupView.BackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
             UIView.animate(withDuration: displayDuration, delay: 0, options: displayAnimationOptions, animations: {
                 self.displayAnimationBlock?()
@@ -382,7 +377,7 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimator {
         }
     }
 
-    open func dismiss(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
+    open func dismiss(contentView: UIView, backgroundView: PopupView.BackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
             UIView.animate(withDuration: dismissDuration, delay: 0, options: dismissAnimationOptions, animations: {
                 self.dismissAnimationBlock?()
@@ -396,8 +391,8 @@ open class JXPopupViewBaseAnimator: JXPopupViewAnimator {
     }
 }
 
-open class JXPopupViewLeftwardAnimator: JXPopupViewBaseAnimator {
-    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+open class LeftwardAnimator: BaseAnimator {
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
         let fromClosure = { [weak self] in
@@ -429,8 +424,8 @@ open class JXPopupViewLeftwardAnimator: JXPopupViewBaseAnimator {
     }
 }
 
-open class JXPopupViewRightwardAnimator: JXPopupViewBaseAnimator {
-    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+open class RightwardAnimator: BaseAnimator {
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
         let fromClosure = { [weak self] in
@@ -462,8 +457,8 @@ open class JXPopupViewRightwardAnimator: JXPopupViewBaseAnimator {
     }
 }
 
-open class JXPopupViewUpwardAnimator: JXPopupViewBaseAnimator {
-    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+open class UpwardAnimator: BaseAnimator {
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
         let fromClosure = { [weak self] in
@@ -495,8 +490,8 @@ open class JXPopupViewUpwardAnimator: JXPopupViewBaseAnimator {
     }
 }
 
-open class JXPopupViewDownwardAnimator: JXPopupViewBaseAnimator {
-    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+open class DownwardAnimator: BaseAnimator {
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
         let fromClosure = { [weak self] in
@@ -528,8 +523,8 @@ open class JXPopupViewDownwardAnimator: JXPopupViewBaseAnimator {
     }
 }
 
-open class JXPopupViewFadeInOutAnimator: JXPopupViewBaseAnimator {
-    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+open class FadeInOutAnimator: BaseAnimator {
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
         contentView.alpha = 0
@@ -546,8 +541,8 @@ open class JXPopupViewFadeInOutAnimator: JXPopupViewBaseAnimator {
     }
 }
 
-open class JXPopupViewZoomInOutAnimator: JXPopupViewBaseAnimator {
-    open override func setup(popupView: JXPopupView, contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView) {
+open class ZoomInOutAnimator: BaseAnimator {
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
 
         contentView.alpha = 0

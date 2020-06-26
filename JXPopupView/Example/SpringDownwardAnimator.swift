@@ -8,9 +8,9 @@
 
 import UIKit
 
-class JXPopupViewSpringDownwardAnimator: JXPopupViewDownwardAnimator {
+class SpringDownwardAnimator: DownwardAnimator {
 
-    public override func display(contentView: UIView, backgroundView: JXBackgroundView, animated: Bool, completion: @escaping () -> ()) {
+    public override func display(contentView: UIView, backgroundView: PopupView.BackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.7, options: displayAnimationOptions, animations: {
                 self.displayAnimationBlock?()
