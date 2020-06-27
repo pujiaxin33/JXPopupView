@@ -39,7 +39,7 @@ public protocol PopupViewAnimator {
 }
 
 /// 一个轻量级的自定义视图弹框框架，主要提供动画、背景的灵活配置，功能简单却强大
-/// 通过面对协议JXPopupViewAnimationProtocol，实现对动画的灵活配置
+/// 通过面对协议PopupViewAnimator，实现对动画的灵活配置
 /// 通过JXBackgroundView对背景进行自定义配置
 public class PopupView: UIView {
     /*
@@ -87,7 +87,7 @@ public class PopupView: UIView {
     /// - Parameters:
     ///   - containerView: 展示弹框的视图，可以是window、vc.view、自定义视图等
     ///   - contentView: 自定义的弹框视图
-    ///   - animator: 遵从协议JXPopupViewAnimationProtocol的动画驱动器
+    ///   - animator: 遵从协议PopupViewAnimator的动画驱动器
     public init(containerView: UIView, contentView: UIView, animator: PopupViewAnimator = FadeInOutAnimator()) {
         self.containerView = containerView
         self.contentView = contentView
