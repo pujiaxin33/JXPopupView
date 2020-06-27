@@ -352,7 +352,7 @@ open class BaseAnimator: PopupViewAnimator {
             }
         case .bottom(let bottom):
             contentView.translatesAutoresizingMaskIntoConstraints = false
-            contentView.topAnchor.constraint(equalTo: popupView.topAnchor, constant: bottom.bottomMargin).isActive = true
+            contentView.bottomAnchor.constraint(equalTo: popupView.bottomAnchor, constant: -bottom.bottomMargin).isActive = true
             contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: bottom.offsetX).isActive = true
             if let width = bottom.width {
                 contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
@@ -482,11 +482,26 @@ open class UpwardAnimator: BaseAnimator {
         let fromClosure = { [weak self] in
             guard let self = self else { return }
             backgroundView.alpha = 0
-            if case .frame(var frame) = self.layout {
+            switch self.layout {
+            case .frame(var frame):
                 frame.origin.y = popupView.frame.size.height
                 contentView.frame = frame
-            }else {
-                popupView.centerYConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.height/2 + contentView.bounds.size.height/2)
+            case .center(_):
+                var contentViewHeight = contentView.heightConstraint(firstItem: contentView)?.constant
+                if contentViewHeight == nil {
+                    contentViewHeight = contentView.intrinsicContentSize.height
+                }
+                popupView.centerYConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.height/2 + contentViewHeight!/2)
+                popupView.layoutIfNeeded()
+            case .top(_):
+                popupView.topConstraint(firstItem: contentView)?.constant = popupView.bounds.size.height
+                popupView.layoutIfNeeded()
+            case .bottom(_):
+                var contentViewHeight = contentView.heightConstraint(firstItem: contentView)?.constant
+                if contentViewHeight == nil {
+                    contentViewHeight = contentView.intrinsicContentSize.height
+                }
+                popupView.bottomConstraint(firstItem: contentView)?.constant = contentViewHeight!
                 popupView.layoutIfNeeded()
             }
         }
@@ -495,10 +510,17 @@ open class UpwardAnimator: BaseAnimator {
         displayAnimationBlock = { [weak self] in
             guard let self = self else { return }
             backgroundView.alpha = 1
-            if case .frame(let frame) = self.layout {
+            switch self.layout {
+            case .frame(let frame):
                 contentView.frame = frame
-            }else {
-                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.offsetY()
+            case .center(let center):
+                popupView.centerYConstraint(firstItem: contentView)?.constant = center.offsetY
+                popupView.layoutIfNeeded()
+            case .top(let top):
+                popupView.topConstraint(firstItem: contentView)?.constant = top.topMargin
+                popupView.layoutIfNeeded()
+            case .bottom(let bottom):
+                popupView.bottomConstraint(firstItem: contentView)?.constant = -bottom.bottomMargin
                 popupView.layoutIfNeeded()
             }
         }
@@ -515,11 +537,26 @@ open class DownwardAnimator: BaseAnimator {
         let fromClosure = { [weak self] in
             guard let self = self else { return }
             backgroundView.alpha = 0
-            if case .frame(var frame) = self.layout {
-                frame.origin.y = popupView.frame.size.height
+            switch self.layout {
+            case .frame(var frame):
+                frame.origin.y = -frame.size.height
                 contentView.frame = frame
-            }else {
-                popupView.centerYConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.height/2 + contentView.bounds.size.height/2)
+            case .center(_):
+                var contentViewHeight = contentView.heightConstraint(firstItem: contentView)?.constant
+                if contentViewHeight == nil {
+                    contentViewHeight = contentView.intrinsicContentSize.height
+                }
+                popupView.centerYConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.height/2 + contentViewHeight!/2)
+                popupView.layoutIfNeeded()
+            case .top(_):
+                var contentViewHeight = contentView.heightConstraint(firstItem: contentView)?.constant
+                if contentViewHeight == nil {
+                    contentViewHeight = contentView.intrinsicContentSize.height
+                }
+                popupView.topConstraint(firstItem: contentView)?.constant = -contentViewHeight!
+                popupView.layoutIfNeeded()
+            case .bottom(_):
+                popupView.bottomConstraint(firstItem: contentView)?.constant = -popupView.bounds.size.height
                 popupView.layoutIfNeeded()
             }
         }
@@ -528,10 +565,17 @@ open class DownwardAnimator: BaseAnimator {
         displayAnimationBlock = { [weak self] in
             guard let self = self else { return }
             backgroundView.alpha = 1
-            if case .frame(let frame) = self.layout {
+            switch self.layout {
+            case .frame(let frame):
                 contentView.frame = frame
-            }else {
-                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.offsetY()
+            case .center(let center):
+                popupView.centerYConstraint(firstItem: contentView)?.constant = center.offsetY
+                popupView.layoutIfNeeded()
+            case .top(let top):
+                popupView.topConstraint(firstItem: contentView)?.constant = top.topMargin
+                popupView.layoutIfNeeded()
+            case .bottom(let bottom):
+                popupView.bottomConstraint(firstItem: contentView)?.constant = -bottom.bottomMargin
                 popupView.layoutIfNeeded()
             }
         }
@@ -596,5 +640,13 @@ extension UIView {
 
     func centerYConstraint(firstItem: UIView) -> NSLayoutConstraint? {
         return constraints.first { $0.firstAttribute == .centerY && $0.firstItem as? UIView == firstItem }
+    }
+
+    func topConstraint(firstItem: UIView) -> NSLayoutConstraint? {
+        return constraints.first { $0.firstAttribute == .top && $0.firstItem as? UIView == firstItem }
+    }
+
+    func bottomConstraint(firstItem: UIView) -> NSLayoutConstraint? {
+       return constraints.first { $0.firstAttribute == .bottom && $0.firstItem as? UIView == firstItem }
     }
 }

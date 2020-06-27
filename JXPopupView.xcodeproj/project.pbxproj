@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1906C25624A7031D00535914 /* LayoutPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1906C25524A7031D00535914 /* LayoutPickerViewController.swift */; };
 		19E0CB83217D75D3007290BA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB82217D75D3007290BA /* AppDelegate.swift */; };
 		19E0CB85217D75D3007290BA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E0CB84217D75D3007290BA /* ViewController.swift */; };
 		19E0CB88217D75D3007290BA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19E0CB86217D75D3007290BA /* Main.storyboard */; };
@@ -33,6 +34,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1906C25524A7031D00535914 /* LayoutPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutPickerViewController.swift; sourceTree = "<group>"; };
 		19E0CB7F217D75D3007290BA /* JXPopupView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JXPopupView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		19E0CB82217D75D3007290BA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		19E0CB84217D75D3007290BA /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			children = (
 				19E0CB9E217F0335007290BA /* AnimationViewController.swift */,
 				19E0CBA0217F0342007290BA /* BackgroundViewController.swift */,
+				1906C25524A7031D00535914 /* LayoutPickerViewController.swift */,
 				19E0CBA5217F2A73007290BA /* CustomAnimator.swift */,
 				19E0CB97217DA4BD007290BA /* TestAlertView.swift */,
 				19E0CB9C217F0023007290BA /* TestAlertView.xib */,
@@ -230,6 +233,7 @@
 				19E0CBA1217F0342007290BA /* BackgroundViewController.swift in Sources */,
 				19E0CB85217D75D3007290BA /* ViewController.swift in Sources */,
 				19E0CB98217DA4BD007290BA /* TestAlertView.swift in Sources */,
+				1906C25624A7031D00535914 /* LayoutPickerViewController.swift in Sources */,
 				19E0CBC221803D55007290BA /* PopupView.swift in Sources */,
 				19E0CB9F217F0335007290BA /* AnimationViewController.swift in Sources */,
 				19E0CB83217D75D3007290BA /* AppDelegate.swift in Sources */,

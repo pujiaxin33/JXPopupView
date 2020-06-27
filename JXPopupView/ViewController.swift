@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     var backgroundColor = UIColor.black.withAlphaComponent(0.3)
     var backgroundEffectStyle = UIBlurEffect.Style.light
     var animationIndex: Int = 0
+    var layoutIndex: Int = 0
     var containerView: UIView!
     @IBOutlet weak var customView: UIView!
 
@@ -25,7 +26,10 @@ class ViewController: UIViewController {
     @IBAction func backgroundItemClicked(_ sender: UIBarButtonItem) {
         let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "BackgroundViewController") as! BackgroundViewController
-        vc.didSelectRowCallback = {(indexPath) in
+        vc.didSelectRowCallback = {[weak self] (indexPath) in
+            guard let self = self else {
+                return
+            }
             switch indexPath.row {
             case 0:
                 self.backgroundStyle = .solidColor
@@ -46,10 +50,19 @@ class ViewController: UIViewController {
     @IBAction func animationItemClicked(_ sender: UIBarButtonItem) {
         let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "AnimationViewController") as! AnimationViewController
-        vc.didSelectRowCallback = {(indexPath) in
-            self.animationIndex = indexPath.row
+        vc.didSelectRowCallback = {[weak self] (indexPath) in
+            self?.animationIndex = indexPath.row
         }
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let layoutVC = segue.destination as? LayoutPickerViewController {
+            layoutVC.didSelectRowCallback = {[weak self] (indexPath) in
+                self?.layoutIndex = indexPath.row
+            }
+        }
     }
 
     @IBAction func customViewDisplayButtonClicked(_ sender: UIButton) {
@@ -70,28 +83,40 @@ class ViewController: UIViewController {
     func displayPopupView() {
         contentView = Bundle.main.loadNibNamed("TestAlertView", owner: nil, options: nil)?.first as? TestAlertView
         //- 确定动画效果及其布局
+        var layout: BaseAnimator.Layout?
+        switch layoutIndex {
+        case 0:
+            layout = .center(.init(width: 100, height: 100))
+        case 1:
+            layout = .top(.init(topMargin: 64))
+        case 2:
+            layout = .bottom(.init(bottomMargin: 34))
+        case 3:
+            layout = .frame(CGRect(x: 100, y: 300, width: 200, height: 200))
+        default: break
+        }
         var animator: PopupViewAnimator?
         switch animationIndex {
         case 0:
-            animator = FadeInOutAnimator(layout: .center(.init(offsetY: 100, width: 300, height: 300)))
+            animator = FadeInOutAnimator(layout: layout!)
         case 1:
-            animator = ZoomInOutAnimator()
+            animator = ZoomInOutAnimator(layout: layout!)
         case 2:
-            animator = UpwardAnimator()
+            animator = UpwardAnimator(layout: layout!)
         case 3:
-            animator = DownwardAnimator()
+            animator = DownwardAnimator(layout: layout!)
         case 4:
-            animator = LeftwardAnimator(layout: .center(.init(offsetY: 100, width: 300, height: 300)))
+            animator = LeftwardAnimator(layout: layout!)
         case 5:
-            animator = RightwardAnimator()
+            animator = RightwardAnimator(layout: layout!)
         case 6:
-            let spring = DownwardAnimator()
+            let spring = DownwardAnimator(layout: layout!)
             spring.displayDuration = 0.5
             spring.displaySpringDampingRatio = 0.7
             spring.displaySpringVelocity = 0.5
             animator = spring
         case 7:
-            animator = CustomAnimator(layout: .center(.init()))
+            animator = CustomAnimator(layout: layout!)
         default:
             break
         }
