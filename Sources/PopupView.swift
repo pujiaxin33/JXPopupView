@@ -12,11 +12,11 @@ public protocol PopupViewAnimator {
     /// 初始化配置动画驱动器
     ///
     /// - Parameters:
+    ///   - popupView: PopupView
     ///   - contentView: 自定义的弹框视图
     ///   - backgroundView: 背景视图
-    ///   - containerView: 展示弹框的视图
     /// - Returns: void
-    func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView)
+    func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView)
 
     /// 处理展示动画
     ///
@@ -101,7 +101,7 @@ public class PopupView: UIView {
         addSubview(backgroundView)
         addSubview(contentView)
 
-        animator.setup(popupView: self, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+        animator.setup(popupView: self, contentView: contentView, backgroundView: backgroundView)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -235,12 +235,17 @@ open class BaseAnimator: PopupViewAnimator {
     open var layout: Layout
 
     open var displayDuration: TimeInterval = 0.25
-    open var displayAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
+    open var displayAnimationOptions: UIView.AnimationOptions = .curveEaseInOut
+    //displaySpringDampingRatio、displaySpringVelocity属性同时有值，才会使用spring动画方法。dismissSpringDampingRatio、dismissSpringVelocity同理。
+    open var displaySpringDampingRatio: CGFloat?
+    open var displaySpringVelocity: CGFloat?
     /// 展示动画的配置block
     open var displayAnimationBlock: (()->())?
 
     open var dismissDuration: TimeInterval = 0.25
-    open var dismissAnimationOptions = UIView.AnimationOptions.init(rawValue: UIView.AnimationOptions.beginFromCurrentState.rawValue & UIView.AnimationOptions.curveEaseInOut.rawValue)
+    open var dismissAnimationOptions: UIView.AnimationOptions = .curveEaseInOut
+    open var dismissSpringDampingRatio: CGFloat?
+    open var dismissSpringVelocity: CGFloat?
     /// 消失动画的配置block
     open var dismissAnimationBlock: (()->())?
 
@@ -250,23 +255,23 @@ open class BaseAnimator: PopupViewAnimator {
         case bottom(Bottom)
         case frame(CGRect)
 
-        func horizontalOffset() -> CGFloat {
+        func offsetX() -> CGFloat {
             switch self {
             case .center(let center):
-                return center.horizontalOffset
+                return center.offsetX
             case .top(let top):
-                return top.horizontalOffset
+                return top.offsetX
             case .bottom(let bottom):
-                return bottom.horizontalOffset
+                return bottom.offsetX
             case .frame(_):
                 return 0
             }
         }
 
-        func verticalOffset() -> CGFloat {
+        func offsetY() -> CGFloat {
             switch self {
             case .center(let center):
-                return center.verticalOffset
+                return center.offsetY
             case .top(let top):
                 return top.topMargin
             case .bottom(let bottom):
@@ -277,15 +282,14 @@ open class BaseAnimator: PopupViewAnimator {
         }
 
         public struct Center {
-            public var verticalOffset: CGFloat
-            public var horizontalOffset: CGFloat
+            public var offsetY: CGFloat
+            public var offsetX: CGFloat
             public var width: CGFloat?
             public var height: CGFloat?
-            public static let zero = Center()
 
-            public init(verticalOffset: CGFloat = 0, horizontalOffset: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
-                self.verticalOffset = verticalOffset
-                self.horizontalOffset = horizontalOffset
+            public init(offsetY: CGFloat = 0, offsetX: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
+                self.offsetY = offsetY
+                self.offsetX = offsetX
                 self.width = width
                 self.height = height
             }
@@ -293,14 +297,13 @@ open class BaseAnimator: PopupViewAnimator {
 
         public struct Top {
             public var topMargin: CGFloat
-            public var horizontalOffset: CGFloat
+            public var offsetX: CGFloat
             public var width: CGFloat?
             public var height: CGFloat?
-            public static let zero = Top()
 
-            public init(topMargin: CGFloat = 10, horizontalOffset: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
+            public init(topMargin: CGFloat = 0, offsetX: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
                 self.topMargin = topMargin
-                self.horizontalOffset = horizontalOffset
+                self.offsetX = offsetX
                 self.width = width
                 self.height = height
             }
@@ -308,29 +311,29 @@ open class BaseAnimator: PopupViewAnimator {
 
         public struct Bottom {
             public var bottomMargin: CGFloat
-            public var horizontalOffset: CGFloat
+            public var offsetX: CGFloat
             public var width: CGFloat?
             public var height: CGFloat?
 
-            public init(bottomMargin: CGFloat = 10, horizontalOffset: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
+            public init(bottomMargin: CGFloat = 0, offsetX: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
                 self.bottomMargin = bottomMargin
-                self.horizontalOffset = horizontalOffset
+                self.offsetX = offsetX
                 self.width = width
                 self.height = height
             }
         }
     }
 
-    public init(layout: Layout = .center(.zero)) {
+    public init(layout: Layout = .center(.init())) {
         self.layout = layout
     }
 
-    open func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
+    open func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
         switch layout {
         case .center(let center):
             contentView.translatesAutoresizingMaskIntoConstraints = false
-            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: center.horizontalOffset).isActive = true
-            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor, constant: center.verticalOffset).isActive = true
+            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: center.offsetX).isActive = true
+            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor, constant: center.offsetY).isActive = true
             if let width = center.width {
                 contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
             }
@@ -340,7 +343,7 @@ open class BaseAnimator: PopupViewAnimator {
         case .top(let top):
             contentView.translatesAutoresizingMaskIntoConstraints = false
             contentView.topAnchor.constraint(equalTo: popupView.topAnchor, constant: top.topMargin).isActive = true
-            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: top.horizontalOffset).isActive = true
+            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: top.offsetX).isActive = true
             if let width = top.width {
                 contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
             }
@@ -350,7 +353,7 @@ open class BaseAnimator: PopupViewAnimator {
         case .bottom(let bottom):
             contentView.translatesAutoresizingMaskIntoConstraints = false
             contentView.topAnchor.constraint(equalTo: popupView.topAnchor, constant: bottom.bottomMargin).isActive = true
-            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: bottom.horizontalOffset).isActive = true
+            contentView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor, constant: bottom.offsetX).isActive = true
             if let width = bottom.width {
                 contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
             }
@@ -360,16 +363,22 @@ open class BaseAnimator: PopupViewAnimator {
         case .frame(let frame):
             contentView.frame = frame
         }
-//        popupView.setNeedsLayout()
-//        popupView.layoutIfNeeded()
     }
 
     open func display(contentView: UIView, backgroundView: PopupView.BackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
-            UIView.animate(withDuration: displayDuration, delay: 0, options: displayAnimationOptions, animations: {
-                self.displayAnimationBlock?()
-            }) { (finished) in
-                completion()
+            if let displaySpringDampingRatio = displaySpringDampingRatio, let displaySpringVelocity = displaySpringVelocity {
+                UIView.animate(withDuration: displayDuration, delay: 0, usingSpringWithDamping: displaySpringDampingRatio, initialSpringVelocity: displaySpringVelocity, options: displayAnimationOptions, animations: {
+                    self.displayAnimationBlock?()
+                }) { (_) in
+                    completion()
+                }
+            }else {
+                UIView.animate(withDuration: displayDuration, delay: 0, options: displayAnimationOptions, animations: {
+                    self.displayAnimationBlock?()
+                }) { (_) in
+                    completion()
+                }
             }
         }else {
             self.displayAnimationBlock?()
@@ -379,11 +388,20 @@ open class BaseAnimator: PopupViewAnimator {
 
     open func dismiss(contentView: UIView, backgroundView: PopupView.BackgroundView, animated: Bool, completion: @escaping () -> ()) {
         if animated {
-            UIView.animate(withDuration: dismissDuration, delay: 0, options: dismissAnimationOptions, animations: {
-                self.dismissAnimationBlock?()
-            }) { (finished) in
-                completion()
+            if let displaySpringDampingRatio = displaySpringDampingRatio, let displaySpringVelocity = displaySpringVelocity {
+                UIView.animate(withDuration: displayDuration, delay: 0, usingSpringWithDamping: displaySpringDampingRatio, initialSpringVelocity: displaySpringVelocity, options: displayAnimationOptions, animations: {
+                    self.dismissAnimationBlock?()
+                }) { (_) in
+                    completion()
+                }
+            }else {
+                UIView.animate(withDuration: dismissDuration, delay: 0, options: dismissAnimationOptions, animations: {
+                    self.dismissAnimationBlock?()
+                }) { (finished) in
+                    completion()
+                }
             }
+
         }else {
             self.dismissAnimationBlock?()
             completion()
@@ -392,19 +410,19 @@ open class BaseAnimator: PopupViewAnimator {
 }
 
 open class LeftwardAnimator: BaseAnimator {
-    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
-        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
         let fromClosure = { [weak self] in
             guard let self = self else { return }
+            backgroundView.alpha = 0
             if case .frame(var frame) = self.layout {
                 frame.origin.x = -frame.size.width
                 contentView.frame = frame
             }else {
                 popupView.centerXConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
+                popupView.layoutIfNeeded()
             }
-            popupView.layoutIfNeeded()
-            backgroundView.alpha = 0
         }
         fromClosure()
 
@@ -414,9 +432,9 @@ open class LeftwardAnimator: BaseAnimator {
             if case .frame(let frame) = self.layout {
                 contentView.frame = frame
             }else {
-                popupView.centerXConstraint(firstItem: contentView)?.constant = self.layout.horizontalOffset()
+                popupView.centerXConstraint(firstItem: contentView)?.constant = self.layout.offsetX()
+                popupView.layoutIfNeeded()
             }
-            popupView.layoutIfNeeded()
         }
         dismissAnimationBlock = {
             fromClosure()
@@ -425,19 +443,19 @@ open class LeftwardAnimator: BaseAnimator {
 }
 
 open class RightwardAnimator: BaseAnimator {
-    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
-        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
         let fromClosure = { [weak self] in
             guard let self = self else { return }
+            backgroundView.alpha = 0
             if case .frame(var frame) = self.layout {
                 frame.origin.x = popupView.bounds.size.width
                 contentView.frame = frame
             }else {
                 popupView.centerXConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
+                popupView.layoutIfNeeded()
             }
-            popupView.layoutIfNeeded()
-            backgroundView.alpha = 0
         }
         fromClosure()
 
@@ -447,9 +465,9 @@ open class RightwardAnimator: BaseAnimator {
             if case .frame(let frame) = self.layout {
                 contentView.frame = frame
             }else {
-                popupView.centerXConstraint(firstItem: contentView)?.constant = self.layout.horizontalOffset()
+                popupView.centerXConstraint(firstItem: contentView)?.constant = self.layout.offsetX()
+                popupView.layoutIfNeeded()
             }
-            popupView.layoutIfNeeded()
         }
         dismissAnimationBlock = {
             fromClosure()
@@ -458,19 +476,19 @@ open class RightwardAnimator: BaseAnimator {
 }
 
 open class UpwardAnimator: BaseAnimator {
-    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
-        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
         let fromClosure = { [weak self] in
             guard let self = self else { return }
+            backgroundView.alpha = 0
             if case .frame(var frame) = self.layout {
                 frame.origin.y = popupView.frame.size.height
                 contentView.frame = frame
             }else {
                 popupView.centerYConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.height/2 + contentView.bounds.size.height/2)
+                popupView.layoutIfNeeded()
             }
-            popupView.layoutIfNeeded()
-            backgroundView.alpha = 0
         }
         fromClosure()
 
@@ -480,9 +498,9 @@ open class UpwardAnimator: BaseAnimator {
             if case .frame(let frame) = self.layout {
                 contentView.frame = frame
             }else {
-                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.verticalOffset()
+                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.offsetY()
+                popupView.layoutIfNeeded()
             }
-            popupView.layoutIfNeeded()
         }
         dismissAnimationBlock = {
             fromClosure()
@@ -491,19 +509,19 @@ open class UpwardAnimator: BaseAnimator {
 }
 
 open class DownwardAnimator: BaseAnimator {
-    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
-        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
         let fromClosure = { [weak self] in
             guard let self = self else { return }
+            backgroundView.alpha = 0
             if case .frame(var frame) = self.layout {
                 frame.origin.y = popupView.frame.size.height
                 contentView.frame = frame
             }else {
                 popupView.centerYConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.height/2 + contentView.bounds.size.height/2)
+                popupView.layoutIfNeeded()
             }
-            popupView.layoutIfNeeded()
-            backgroundView.alpha = 0
         }
         fromClosure()
 
@@ -513,9 +531,9 @@ open class DownwardAnimator: BaseAnimator {
             if case .frame(let frame) = self.layout {
                 contentView.frame = frame
             }else {
-                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.verticalOffset()
+                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.offsetY()
+                popupView.layoutIfNeeded()
             }
-            popupView.layoutIfNeeded()
         }
         dismissAnimationBlock = {
             fromClosure()
@@ -524,8 +542,8 @@ open class DownwardAnimator: BaseAnimator {
 }
 
 open class FadeInOutAnimator: BaseAnimator {
-    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
-        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
         contentView.alpha = 0
         backgroundView.alpha = 0
@@ -542,8 +560,8 @@ open class FadeInOutAnimator: BaseAnimator {
 }
 
 open class ZoomInOutAnimator: BaseAnimator {
-    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView, containerView: UIView) {
-        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView, containerView: containerView)
+    open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
+        super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
         contentView.alpha = 0
         backgroundView.alpha = 0

@@ -73,7 +73,7 @@ class ViewController: UIViewController {
         var animator: PopupViewAnimator?
         switch animationIndex {
         case 0:
-            animator = FadeInOutAnimator(layout: .center(.init(verticalOffset: 100, width: 300, height: 300)))
+            animator = FadeInOutAnimator(layout: .center(.init(offsetY: 100, width: 300, height: 300)))
         case 1:
             animator = ZoomInOutAnimator()
         case 2:
@@ -81,17 +81,20 @@ class ViewController: UIViewController {
         case 3:
             animator = DownwardAnimator()
         case 4:
-            animator = LeftwardAnimator(layout: .center(.init(verticalOffset: 100, width: 300, height: 300)))
+            animator = LeftwardAnimator(layout: .center(.init(offsetY: 100, width: 300, height: 300)))
         case 5:
             animator = RightwardAnimator()
         case 6:
-            animator = SpringDownwardAnimator()
+            let spring = DownwardAnimator()
+            spring.displayDuration = 0.5
+            spring.displaySpringDampingRatio = 0.7
+            spring.displaySpringVelocity = 0.5
+            animator = spring
         case 7:
-            animator = CustomAnimator()
+            animator = CustomAnimator(layout: .center(.init()))
         default:
             break
         }
-        animator = LeftwardAnimator(layout: .center(.zero))
         let popupView = PopupView(containerView: containerView, contentView: contentView, animator: animator!)
         //配置交互
         popupView.isDismissible = true
