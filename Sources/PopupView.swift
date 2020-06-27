@@ -417,10 +417,10 @@ open class LeftwardAnimator: BaseAnimator {
             guard let self = self else { return }
             backgroundView.alpha = 0
             if case .frame(var frame) = self.layout {
-                frame.origin.x = -frame.size.width
+                frame.origin.x = popupView.bounds.size.width
                 contentView.frame = frame
             }else {
-                popupView.centerXConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
+                popupView.centerXConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
                 popupView.layoutIfNeeded()
             }
         }
@@ -450,10 +450,10 @@ open class RightwardAnimator: BaseAnimator {
             guard let self = self else { return }
             backgroundView.alpha = 0
             if case .frame(var frame) = self.layout {
-                frame.origin.x = popupView.bounds.size.width
+                frame.origin.x = -frame.size.width
                 contentView.frame = frame
             }else {
-                popupView.centerXConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
+                popupView.centerXConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
                 popupView.layoutIfNeeded()
             }
         }

@@ -86,7 +86,7 @@ class ViewController: UIViewController {
         var layout: BaseAnimator.Layout?
         switch layoutIndex {
         case 0:
-            layout = .center(.init(width: 100, height: 100))
+            layout = .center(.init())
         case 1:
             layout = .top(.init(topMargin: 64))
         case 2:
