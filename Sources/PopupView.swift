@@ -148,6 +148,7 @@ public class PopupView: UIView {
         isAnimating = true
         willDismissCallback?()
         animator.dismiss(contentView: contentView, backgroundView: backgroundView, animated: animated, completion: {
+            self.contentView.removeFromSuperview()
             self.removeFromSuperview()
             completion?()
             self.isAnimating = false
