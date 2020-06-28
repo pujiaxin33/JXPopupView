@@ -424,7 +424,7 @@ open class BaseAnimator: PopupViewAnimator {
         case .leading(let leading):
             contentView.translatesAutoresizingMaskIntoConstraints = false
             contentView.leadingAnchor.constraint(equalTo: popupView.leadingAnchor, constant: leading.leadingMargin).isActive = true
-            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor).isActive = true
+            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor, constant: leading.offsetY).isActive = true
             if let width = leading.width {
                 contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
             }
@@ -434,7 +434,7 @@ open class BaseAnimator: PopupViewAnimator {
         case .trailing(let trailing):
             contentView.translatesAutoresizingMaskIntoConstraints = false
             contentView.trailingAnchor.constraint(equalTo: popupView.trailingAnchor, constant: -trailing.trailingMargin).isActive = true
-            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor).isActive = true
+            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor, constant: trailing.offsetY).isActive = true
             if let width = trailing.width {
                 contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
             }
@@ -626,17 +626,14 @@ open class UpwardAnimator: BaseAnimator {
             switch self.layout {
             case .frame(let frame):
                 contentView.frame = frame
-            case .center(let center):
-                popupView.centerYConstraint(firstItem: contentView)?.constant = center.offsetY
+            case .center(_), .leading(_), .trailing(_):
+                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.offsetY()
                 popupView.layoutIfNeeded()
             case .top(let top):
                 popupView.topConstraint(firstItem: contentView)?.constant = top.topMargin
                 popupView.layoutIfNeeded()
             case .bottom(let bottom):
                 popupView.bottomConstraint(firstItem: contentView)?.constant = -bottom.bottomMargin
-                popupView.layoutIfNeeded()
-            case .leading(_), .trailing(_):
-                popupView.centerYConstraint(firstItem: contentView)?.constant = 0
                 popupView.layoutIfNeeded()
             }
         }
@@ -684,17 +681,14 @@ open class DownwardAnimator: BaseAnimator {
             switch self.layout {
             case .frame(let frame):
                 contentView.frame = frame
-            case .center(let center):
-                popupView.centerYConstraint(firstItem: contentView)?.constant = center.offsetY
+            case .center(_), .leading(_), .trailing(_):
+                popupView.centerYConstraint(firstItem: contentView)?.constant = self.layout.offsetY()
                 popupView.layoutIfNeeded()
             case .top(let top):
                 popupView.topConstraint(firstItem: contentView)?.constant = top.topMargin
                 popupView.layoutIfNeeded()
             case .bottom(let bottom):
                 popupView.bottomConstraint(firstItem: contentView)?.constant = -bottom.bottomMargin
-                popupView.layoutIfNeeded()
-            case .leading(_), .trailing(_):
-                popupView.centerYConstraint(firstItem: contentView)?.constant = 0
                 popupView.layoutIfNeeded()
             }
         }
