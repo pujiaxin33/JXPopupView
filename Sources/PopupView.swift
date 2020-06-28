@@ -254,6 +254,8 @@ open class BaseAnimator: PopupViewAnimator {
         case center(Center)
         case top(Top)
         case bottom(Bottom)
+        case leading(Leading)
+        case trailing(Trailing)
         case frame(CGRect)
 
         func offsetX() -> CGFloat {
@@ -264,7 +266,7 @@ open class BaseAnimator: PopupViewAnimator {
                 return top.offsetX
             case .bottom(let bottom):
                 return bottom.offsetX
-            case .frame(_):
+            case .leading(_), .trailing(_), .frame(_):
                 return 0
             }
         }
@@ -273,11 +275,11 @@ open class BaseAnimator: PopupViewAnimator {
             switch self {
             case .center(let center):
                 return center.offsetY
-            case .top(let top):
-                return top.topMargin
-            case .bottom(let bottom):
-                return bottom.bottomMargin
-            case .frame(_):
+            case .leading(let leading):
+                return leading.offsetY
+            case .trailing(let trailing):
+                return trailing.offsetY
+            case .top(_), .bottom(_), .frame(_):
                 return 0
             }
         }
@@ -288,6 +290,12 @@ open class BaseAnimator: PopupViewAnimator {
             public var width: CGFloat?
             public var height: CGFloat?
 
+            /// 如果contentView重载了intrinsicContentSize属性并返回其内容的CGSize，就无需再设置width、height值。
+            /// - Parameters:
+            ///   - offsetY: Y轴上的偏移值
+            ///   - offsetX: X轴上的偏移值
+            ///   - width: 宽度值，赋值之后会添加width约束
+            ///   - height: 高度值，赋值之后会添加height约束
             public init(offsetY: CGFloat = 0, offsetX: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
                 self.offsetY = offsetY
                 self.offsetX = offsetX
@@ -302,6 +310,12 @@ open class BaseAnimator: PopupViewAnimator {
             public var width: CGFloat?
             public var height: CGFloat?
 
+            /// 如果contentView重载了intrinsicContentSize属性并返回其内容的CGSize，就无需再设置width、height值。
+            /// - Parameters:
+            ///   - topMargin: 顶部边距
+            ///   - offsetX: X轴上的偏移值
+            ///   - width: 宽度值，赋值之后会添加width约束
+            ///   - height: 高度值，赋值之后会添加height约束
             public init(topMargin: CGFloat = 0, offsetX: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
                 self.topMargin = topMargin
                 self.offsetX = offsetX
@@ -316,9 +330,55 @@ open class BaseAnimator: PopupViewAnimator {
             public var width: CGFloat?
             public var height: CGFloat?
 
+            /// 如果contentView重载了intrinsicContentSize属性并返回其内容的CGSize，就无需再设置width、height值。
+            /// - Parameters:
+            ///   - bottomMargin: 底部边距
+            ///   - offsetX: X轴上的偏移值
+            ///   - width: 宽度值，赋值之后会添加width约束
+            ///   - height: 高度值，赋值之后会添加height约束
             public init(bottomMargin: CGFloat = 0, offsetX: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
                 self.bottomMargin = bottomMargin
                 self.offsetX = offsetX
+                self.width = width
+                self.height = height
+            }
+        }
+
+        public struct Leading {
+            public var leadingMargin: CGFloat
+            public var offsetY: CGFloat
+            public var width: CGFloat?
+            public var height: CGFloat?
+
+            /// 如果contentView重载了intrinsicContentSize属性并返回其内容的CGSize，就无需再设置width、height值。
+            /// - Parameters:
+            ///   - leadingMargin: leading边距
+            ///   - offsetY: Y轴上的偏移值
+            ///   - width: 宽度值，赋值之后会添加width约束
+            ///   - height: 高度值，赋值之后会添加height约束
+            public init(leadingMargin: CGFloat = 0, offsetY: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
+                self.leadingMargin = leadingMargin
+                self.offsetY = offsetY
+                self.width = width
+                self.height = height
+            }
+        }
+
+        public struct Trailing {
+            public var trailingMargin: CGFloat
+            public var offsetY: CGFloat
+            public var width: CGFloat?
+            public var height: CGFloat?
+
+            /// 如果contentView重载了intrinsicContentSize属性并返回其内容的CGSize，就无需再设置width、height值。
+            /// - Parameters:
+            ///   - trailingMargin: trailing边距
+            ///   - offsetY: Y轴上的偏移值
+            ///   - width: 宽度值，赋值之后会添加width约束
+            ///   - height: 高度值，赋值之后会添加height约束
+            public init(trailingMargin: CGFloat = 0, offsetY: CGFloat = 0, width: CGFloat? = nil, height: CGFloat? = nil) {
+                self.trailingMargin = trailingMargin
+                self.offsetY = offsetY
                 self.width = width
                 self.height = height
             }
@@ -359,6 +419,26 @@ open class BaseAnimator: PopupViewAnimator {
                 contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
             }
             if let height = bottom.height {
+                contentView.heightAnchor.constraint(equalToConstant: height).isActive = true
+            }
+        case .leading(let leading):
+            contentView.translatesAutoresizingMaskIntoConstraints = false
+            contentView.leadingAnchor.constraint(equalTo: popupView.leadingAnchor, constant: leading.leadingMargin).isActive = true
+            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor).isActive = true
+            if let width = leading.width {
+                contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
+            }
+            if let height = leading.height {
+                contentView.heightAnchor.constraint(equalToConstant: height).isActive = true
+            }
+        case .trailing(let trailing):
+            contentView.translatesAutoresizingMaskIntoConstraints = false
+            contentView.trailingAnchor.constraint(equalTo: popupView.trailingAnchor, constant: -trailing.trailingMargin).isActive = true
+            contentView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor).isActive = true
+            if let width = trailing.width {
+                contentView.widthAnchor.constraint(equalToConstant: width).isActive = true
+            }
+            if let height = trailing.height {
                 contentView.heightAnchor.constraint(equalToConstant: height).isActive = true
             }
         case .frame(let frame):
@@ -417,11 +497,18 @@ open class LeftwardAnimator: BaseAnimator {
         let fromClosure = { [weak self] in
             guard let self = self else { return }
             backgroundView.alpha = 0
-            if case .frame(var frame) = self.layout {
+            switch self.layout {
+            case .frame(var frame):
                 frame.origin.x = popupView.bounds.size.width
                 contentView.frame = frame
-            }else {
+            case .center(_), .top(_), .bottom(_):
                 popupView.centerXConstraint(firstItem: contentView)?.constant = (popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
+                popupView.layoutIfNeeded()
+            case .leading(_):
+                popupView.leadingConstraint(firstItem: contentView)?.constant = popupView.bounds.size.width
+                popupView.layoutIfNeeded()
+            case .trailing(_):
+                popupView.trailingConstraint(firstItem: contentView)?.constant = popupView.bounds.size.width
                 popupView.layoutIfNeeded()
             }
         }
@@ -430,10 +517,17 @@ open class LeftwardAnimator: BaseAnimator {
         displayAnimationBlock = { [weak self] in
             guard let self = self else { return }
             backgroundView.alpha = 1
-            if case .frame(let frame) = self.layout {
+            switch self.layout {
+            case .frame(let frame):
                 contentView.frame = frame
-            }else {
+            case .center(_), .top(_), .bottom(_):
                 popupView.centerXConstraint(firstItem: contentView)?.constant = self.layout.offsetX()
+                popupView.layoutIfNeeded()
+            case .leading(let leading):
+                popupView.leadingConstraint(firstItem: contentView)?.constant = leading.leadingMargin
+                popupView.layoutIfNeeded()
+            case .trailing(let trailing):
+                popupView.trailingConstraint(firstItem: contentView)?.constant = -trailing.trailingMargin
                 popupView.layoutIfNeeded()
             }
         }
@@ -450,11 +544,22 @@ open class RightwardAnimator: BaseAnimator {
         let fromClosure = { [weak self] in
             guard let self = self else { return }
             backgroundView.alpha = 0
-            if case .frame(var frame) = self.layout {
+            switch self.layout {
+            case .frame(var frame):
                 frame.origin.x = -frame.size.width
                 contentView.frame = frame
-            }else {
+            case .center(_), .top(_), .bottom(_):
                 popupView.centerXConstraint(firstItem: contentView)?.constant = -(popupView.bounds.size.width/2 + contentView.bounds.size.width/2)
+                popupView.layoutIfNeeded()
+            case .leading(_):
+                var contentViewWidth = contentView.widthConstraint(firstItem: contentView)?.constant
+                if contentViewWidth == nil {
+                    contentViewWidth = contentView.intrinsicContentSize.width
+                }
+                popupView.leadingConstraint(firstItem: contentView)?.constant = -contentViewWidth!
+                popupView.layoutIfNeeded()
+            case .trailing(_):
+                popupView.trailingConstraint(firstItem: contentView)?.constant = -popupView.bounds.size.width
                 popupView.layoutIfNeeded()
             }
         }
@@ -463,10 +568,17 @@ open class RightwardAnimator: BaseAnimator {
         displayAnimationBlock = { [weak self] in
             guard let self = self else { return }
             backgroundView.alpha = 1
-            if case .frame(let frame) = self.layout {
+            switch self.layout {
+            case .frame(let frame):
                 contentView.frame = frame
-            }else {
+            case .center(_), .top(_), .bottom(_):
                 popupView.centerXConstraint(firstItem: contentView)?.constant = self.layout.offsetX()
+                popupView.layoutIfNeeded()
+            case .leading(let leading):
+                popupView.leadingConstraint(firstItem: contentView)?.constant = leading.leadingMargin
+                popupView.layoutIfNeeded()
+            case .trailing(let trailing):
+                popupView.trailingConstraint(firstItem: contentView)?.constant = -trailing.trailingMargin
                 popupView.layoutIfNeeded()
             }
         }
@@ -487,7 +599,7 @@ open class UpwardAnimator: BaseAnimator {
             case .frame(var frame):
                 frame.origin.y = popupView.frame.size.height
                 contentView.frame = frame
-            case .center(_):
+            case .center(_), .leading(_), .trailing(_):
                 var contentViewHeight = contentView.heightConstraint(firstItem: contentView)?.constant
                 if contentViewHeight == nil {
                     contentViewHeight = contentView.intrinsicContentSize.height
@@ -523,6 +635,9 @@ open class UpwardAnimator: BaseAnimator {
             case .bottom(let bottom):
                 popupView.bottomConstraint(firstItem: contentView)?.constant = -bottom.bottomMargin
                 popupView.layoutIfNeeded()
+            case .leading(_), .trailing(_):
+                popupView.centerYConstraint(firstItem: contentView)?.constant = 0
+                popupView.layoutIfNeeded()
             }
         }
         dismissAnimationBlock = {
@@ -542,7 +657,7 @@ open class DownwardAnimator: BaseAnimator {
             case .frame(var frame):
                 frame.origin.y = -frame.size.height
                 contentView.frame = frame
-            case .center(_):
+            case .center(_), .leading(_), .trailing(_):
                 var contentViewHeight = contentView.heightConstraint(firstItem: contentView)?.constant
                 if contentViewHeight == nil {
                     contentViewHeight = contentView.intrinsicContentSize.height
@@ -577,6 +692,9 @@ open class DownwardAnimator: BaseAnimator {
                 popupView.layoutIfNeeded()
             case .bottom(let bottom):
                 popupView.bottomConstraint(firstItem: contentView)?.constant = -bottom.bottomMargin
+                popupView.layoutIfNeeded()
+            case .leading(_), .trailing(_):
+                popupView.centerYConstraint(firstItem: contentView)?.constant = 0
                 popupView.layoutIfNeeded()
             }
         }
@@ -649,5 +767,13 @@ extension UIView {
 
     func bottomConstraint(firstItem: UIView) -> NSLayoutConstraint? {
        return constraints.first { $0.firstAttribute == .bottom && $0.firstItem as? UIView == firstItem }
+    }
+
+    func leadingConstraint(firstItem: UIView) -> NSLayoutConstraint? {
+        return constraints.first { $0.firstAttribute == .leading && $0.firstItem as? UIView == firstItem }
+    }
+
+    func trailingConstraint(firstItem: UIView) -> NSLayoutConstraint? {
+       return constraints.first { $0.firstAttribute == .trailing && $0.firstItem as? UIView == firstItem }
     }
 }

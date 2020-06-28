@@ -3,7 +3,7 @@
 
 # 特性
 
-- 默认提供丰富的动画效果，而且可以灵活的扩展配置，只要遵从并实现`JXPopupViewAnimationProtocol`协议即可；
+- 默认提供丰富的动画效果，而且可以灵活的扩展配置，只要遵从并实现`PopupViewAnimator`协议即可；
 - 使用范围更广，通过view封装，可以在任何view上面展示，并不局限于UIViewController；
 - 弹框背景配置灵活，借鉴了`MBProgressHUD`对背景视图的处理逻辑；
 - 交互细节可配置，提供了`isDismissible`、`isInteractive`、`isPenetrable`属性进行配置；
@@ -58,15 +58,21 @@ pod 'JXPopupView'
 # 使用
 
 ```
-//- 确定contentView的目标frame
-let contentView = Bundle.main.loadNibNamed("TestAlertView", owner: nil, options: nil)?.first as? TestAlertView
-let x: CGFloat = (containerView.bounds.size.width - 200)/2
-let y: CGFloat = (containerView.bounds.size.height - 200)/2
-contentView.frame = CGRect(x: x, y: y, width: 200, height: 200)
+//- 确定contentView的布局方式
+enum Layout {
+    case center(Center)
+    case top(Top)
+    case bottom(Bottom)
+    case leading(Leading)
+    case trailing(Trailing)
+    case frame(CGRect)
+}
+let layout: BaseAnimator.Layout = .center(.init(offsetY: 0, offsetX: 0, width: 200, height: 200))
 //- 确定动画效果
-var animator = JXPopupViewFadeInOutAnimator()
+let animator = FadeInOutAnimator(layout: layout)
 //- 初始化JXPopupView
-let popupView = JXPopupView(containerView: containerView, contentView: contentView, animator: animator!)
+let contentView = TestAlertView()
+let popupView = JXPopupView(containerView: containerView, contentView: contentView, animator: animator)
 //- 配置交互
 popupView.isDismissible = true
 popupView.isInteractive = true
@@ -84,17 +90,17 @@ contentView.popupView()?.dismiss(animated: true, completion: nil)
 
 # 动画自定义
 
-## `JXPopupViewAnimationProtocol`协议方法
+## `PopupViewAnimator`协议方法
 
 ```
-/// 初始化配置动画驱动器
+    /// 初始化配置动画驱动器
     ///
     /// - Parameters:
+    ///   - popupView: PopupView
     ///   - contentView: 自定义的弹框视图
     ///   - backgroundView: 背景视图
-    ///   - containerView: 展示弹框的视图
     /// - Returns: void
-    func setup(contentView: UIView, backgroundView: JXBackgroundView, containerView: UIView)
+    func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView)containerView: UIView)
 
     /// 处理展示动画
     ///
@@ -118,11 +124,8 @@ contentView.popupView()?.dismiss(animated: true, completion: nil)
 
 ## 自定义动画建议
 
-- 现有动画微调
-继承对应的animator，重载协议方法，进行微调。参考demo工程的`JXPopupViewSpringDownwardAnimator`类。
-
 - 完全自定义动画
-可以继承`JXPopupViewBaseAnimator`或者自己新建一个类，遵从`JXPopupViewAnimationProtocol`协议，实现对应方法即可。参考demo工程的`JXPopupViewCustomAnimator`类
+可以继承`BaseAnimator`或者自己新建一个类，遵从`PopupViewAnimator`协议，实现对应方法即可。参考demo工程的`BaseAnimator`类
 
 # 证书
 

@@ -92,6 +92,10 @@ class ViewController: UIViewController {
         case 2:
             layout = .bottom(.init(bottomMargin: 34))
         case 3:
+            layout = .leading(.init(leadingMargin: 20))
+        case 4:
+            layout = .trailing(.init(trailingMargin: 20))
+        case 5:
             layout = .frame(CGRect(x: 100, y: 300, width: 200, height: 200))
         default: break
         }
