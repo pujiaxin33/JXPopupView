@@ -88,7 +88,7 @@ class ViewController: UIViewController {
         case 0:
             layout = .center(.init())
         case 1:
-            layout = .top(.init(topMargin: 64))
+            layout = .top(.init(topMargin: 100))
         case 2:
             layout = .bottom(.init(bottomMargin: 34))
         case 3:

@@ -20,8 +20,20 @@
 | 往右  | ![GIF](https://github.com/pujiaxin33/JXPopupView/blob/master/JXPopupView/GIF/Rightward.gif) |
 | 往下  | ![GIF](https://github.com/pujiaxin33/JXPopupView/blob/master/JXPopupView/GIF/Downward.gif) |
 | 往上  | ![GIF](https://github.com/pujiaxin33/JXPopupView/blob/master/JXPopupView/GIF/Upward.gif) |
-| 部分自定义-弹性动画  | ![GIF](https://github.com/pujiaxin33/JXPopupView/blob/master/JXPopupView/GIF/Spring.gif) |
+| 弹性动画  | ![GIF](https://github.com/pujiaxin33/JXPopupView/blob/master/JXPopupView/GIF/Spring.gif) |
 | 完全自定义动画  | ![GIF](https://github.com/pujiaxin33/JXPopupView/blob/master/JXPopupView/GIF/CustomAnimation.gif) |
+
+## Layout布局方式
+
+动画效果 |  GIF
+----------|--------------
+| Top顶部  | ![GIF](https://github.com/pujiaxin33/JXExampleImages/blob/master/PopupView/TopLayout.gif) |
+| Bottom底部  | ![GIF](https://github.com/pujiaxin33/JXExampleImages/blob/master/PopupView/BottomLayout.gif) |
+| Leading前部  | ![GIF](https://github.com/pujiaxin33/JXExampleImages/blob/master/PopupView/LeadingLayout.gif) |
+| Trailing尾部  | ![GIF](https://github.com/pujiaxin33/JXExampleImages/blob/master/PopupView/TrailingLayout.gif) |
+| Center  | 居中（无示意图） |
+| Frame  | 自定义frame（无示意图） |
+
 
 ## 背景风格
 
@@ -67,6 +79,7 @@ enum Layout {
     case trailing(Trailing)
     case frame(CGRect)
 }
+//如果contentView重载了intrinsicContentSize属性并返回其内容的CGSize，就无需再设置width、height值。
 let layout: BaseAnimator.Layout = .center(.init(offsetY: 0, offsetX: 0, width: 200, height: 200))
 //- 确定动画效果
 let animator = FadeInOutAnimator(layout: layout)
