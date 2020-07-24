@@ -18,6 +18,13 @@ public protocol PopupViewAnimator {
     /// - Returns: void
     func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView)
 
+
+    /// 横竖屏切换的时候，刷新布局
+    /// - Parameters:
+    ///   - popupView: PopupView
+    ///   - contentView: 自定义的弹框视图
+    func refreshLayout(popupView: PopupView, contentView: UIView)
+
     /// 处理展示动画
     ///
     /// - Parameters:
@@ -108,6 +115,13 @@ public class PopupView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+
+        backgroundView.frame = bounds
+        animator.refreshLayout(popupView: self, contentView: contentView)
+    }
+
     public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let pointInContent = convert(point, to: contentView)
         let isPointInContent = contentView.bounds.contains(pointInContent)
@@ -132,6 +146,11 @@ public class PopupView: UIView {
         }
         isAnimating = true
         containerView.addSubview(self)
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        self.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
+        self.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
+        self.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
 
         willDispalyCallback?()
         animator.display(contentView: contentView, backgroundView: backgroundView, animated: animated, completion: {
@@ -442,6 +461,12 @@ open class BaseAnimator: PopupViewAnimator {
                 contentView.heightAnchor.constraint(equalToConstant: height).isActive = true
             }
         case .frame(let frame):
+            contentView.frame = frame
+        }
+    }
+
+    open func refreshLayout(popupView: PopupView, contentView: UIView) {
+        if case .frame(let frame) = layout {
             contentView.frame = frame
         }
     }
