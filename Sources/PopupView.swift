@@ -519,8 +519,8 @@ open class LeftwardAnimator: BaseAnimator {
     open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
-        let fromClosure = { [weak self] in
-            guard let self = self else { return }
+        let fromClosure = { [weak self, weak popupView] in
+            guard let self = self, let popupView = popupView else { return }
             backgroundView.alpha = 0
             switch self.layout {
             case .frame(var frame):
@@ -539,8 +539,8 @@ open class LeftwardAnimator: BaseAnimator {
         }
         fromClosure()
 
-        displayAnimationBlock = { [weak self] in
-            guard let self = self else { return }
+        displayAnimationBlock = { [weak self, weak popupView] in
+            guard let self = self, let popupView = popupView else { return }
             backgroundView.alpha = 1
             switch self.layout {
             case .frame(let frame):
@@ -566,8 +566,8 @@ open class RightwardAnimator: BaseAnimator {
     open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
-        let fromClosure = { [weak self] in
-            guard let self = self else { return }
+        let fromClosure = { [weak self, weak popupView] in
+            guard let self = self, let popupView = popupView else { return }
             backgroundView.alpha = 0
             switch self.layout {
             case .frame(var frame):
@@ -590,8 +590,8 @@ open class RightwardAnimator: BaseAnimator {
         }
         fromClosure()
 
-        displayAnimationBlock = { [weak self] in
-            guard let self = self else { return }
+        displayAnimationBlock = { [weak self, weak popupView] in
+            guard let self = self, let popupView = popupView else { return }
             backgroundView.alpha = 1
             switch self.layout {
             case .frame(let frame):
@@ -617,8 +617,8 @@ open class UpwardAnimator: BaseAnimator {
     open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
-        let fromClosure = { [weak self] in
-            guard let self = self else { return }
+        let fromClosure = { [weak self, weak popupView] in
+            guard let self = self, let popupView = popupView else { return }
             backgroundView.alpha = 0
             switch self.layout {
             case .frame(var frame):
@@ -645,8 +645,8 @@ open class UpwardAnimator: BaseAnimator {
         }
         fromClosure()
 
-        displayAnimationBlock = { [weak self] in
-            guard let self = self else { return }
+        displayAnimationBlock = { [weak self, weak popupView] in
+            guard let self = self, let popupView = popupView else { return }
             backgroundView.alpha = 1
             switch self.layout {
             case .frame(let frame):
@@ -672,8 +672,8 @@ open class DownwardAnimator: BaseAnimator {
     open override func setup(popupView: PopupView, contentView: UIView, backgroundView: PopupView.BackgroundView) {
         super.setup(popupView: popupView, contentView: contentView, backgroundView: backgroundView)
 
-        let fromClosure = { [weak self] in
-            guard let self = self else { return }
+        let fromClosure = { [weak self, weak popupView] in
+            guard let self = self, let popupView = popupView else { return }
             backgroundView.alpha = 0
             switch self.layout {
             case .frame(var frame):
@@ -700,8 +700,8 @@ open class DownwardAnimator: BaseAnimator {
         }
         fromClosure()
 
-        displayAnimationBlock = { [weak self] in
-            guard let self = self else { return }
+        displayAnimationBlock = { [weak self, weak popupView] in
+            guard let self = self, let popupView = popupView else { return }
             backgroundView.alpha = 1
             switch self.layout {
             case .frame(let frame):
