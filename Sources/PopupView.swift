@@ -78,6 +78,7 @@ public class PopupView: UIView {
     }
     public var isInteractive = true
     public var isPenetrable = false
+    public private(set) var isPresenting = false
     public let backgroundView: BackgroundView
     public var willDispalyCallback: (()->())?
     public var didDispalyCallback: (()->())?
@@ -144,6 +145,7 @@ public class PopupView: UIView {
         if isAnimating {
             return
         }
+        isPresenting = true
         isAnimating = true
         containerView.addSubview(self)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -167,6 +169,7 @@ public class PopupView: UIView {
         isAnimating = true
         willDismissCallback?()
         animator.dismiss(contentView: contentView, backgroundView: backgroundView, animated: animated, completion: {
+            self.isPresenting = false
             self.contentView.removeFromSuperview()
             self.removeFromSuperview()
             completion?()
