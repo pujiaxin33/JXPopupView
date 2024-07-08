@@ -133,10 +133,10 @@ public class PopupView: UIView {
                 return nil
             }
         }else {
-            if !isPenetrable {
-                return super.hitTest(point, with: event)
-            }else {
+            if isPenetrable {
                 return nil
+            }else {
+                return super.hitTest(point, with: event)
             }
         }
     }
